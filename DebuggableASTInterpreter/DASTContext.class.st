@@ -87,7 +87,7 @@ DASTContext >> allInstVars [
 
 { #category : #'accessing variables' }
 DASTContext >> allInternVars [
-	^ {('receiver' -> self receiver) . 
+	^ {('self' -> self receiver) . 
 	   ('sender'   -> self sender) }
 ]
 
