@@ -7,6 +7,11 @@ Class {
 	#category : #'DebuggableASTInterpreter-Contexts'
 }
 
+{ #category : #converting }
+DASTMethodContext class >> ep2RemoteClass [
+	^ EP2ExternalContext
+]
+
 { #category : #marking }
 DASTMethodContext class >> lookupSelectorAndMarkTraversedClasses: selector [ 
 	^ self lookupSelector: selector
