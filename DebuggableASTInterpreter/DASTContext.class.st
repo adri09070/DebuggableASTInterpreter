@@ -98,11 +98,6 @@ DASTContext >> allTemps [
 ]
 
 { #category : #'API-lookup' }
-DASTContext >> asString [ 
-	^ 'an External Context'
-]
-
-{ #category : #'API-lookup' }
 DASTContext >> assignVariable: name value: value [
 	"Temporary variables assignment"
 	(self lookupContextDefiningLocalVariable: name)
