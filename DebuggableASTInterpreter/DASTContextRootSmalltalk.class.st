@@ -5,7 +5,7 @@ I must be refactored when contexts start to use DASTEnvironments
 Class {
 	#name : #DASTContextRootSmalltalk,
 	#superclass : #DASTContext,
-	#category : 'DebuggableASTInterpreter-Contexts'
+	#category : #'DebuggableASTInterpreter-Contexts'
 }
 
 { #category : #'accessing - private' }
@@ -43,6 +43,11 @@ DASTContextRootSmalltalk >> gtInspectorSourceIn: composite [
 ]
 
 { #category : #accessing }
+DASTContextRootSmalltalk >> home [ 
+	^self 
+]
+
+{ #category : #accessing }
 DASTContextRootSmalltalk >> isBlockContext [
 	^false
 ]
@@ -70,5 +75,5 @@ DASTContextRootSmalltalk >> sourceCode [
 
 { #category : #'as yet unclassified' }
 DASTContextRootSmalltalk >> temps: aCollection [ 
-	self shouldBeImplemented.
+	aCollection do: [ :assoc | self at: assoc key put: assoc value ]
 ]

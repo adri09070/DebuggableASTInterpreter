@@ -62,7 +62,8 @@ DASTContext class >> newNoMethodContextWithProgram: aRBNode temps: aCollection e
 DASTContext class >> newWithSender: aDASTContext receiver: aReceiver messageNode: aRBMessageNode evaluator: aDASTEvaluator [ 
 	| context |
 	context := ((aDASTEvaluator isEPDASTBlockMirror: aReceiver ) 
-					and: [ " Check if the message is one of the variants of value. This is very ugly and must be changed when implementing environments "
+					and: [ " Check if the message is one of the variants of value. 
+						This is very ugly and must be changed when implementing environments "
 						self valueToBlockMessages keys includes: aRBMessageNode selector ])
 		ifTrue: [ DASTBlockContext new ]
 		ifFalse: [ DASTMethodContext new ].
@@ -94,6 +95,11 @@ DASTContext >> allInternVars [
 { #category : #'accessing - private' }
 DASTContext >> allTemps [
 	self subclassResponsibility 
+]
+
+{ #category : #'API-lookup' }
+DASTContext >> asString [ 
+	^ 'an External Context'
 ]
 
 { #category : #'API-lookup' }
@@ -468,6 +474,11 @@ DASTContext >> hasSender: context [
 	^false
 ]
 
+{ #category : #accessing }
+DASTContext >> home [ 
+	self subclassResponsibility 
+]
+
 { #category : #initialization }
 DASTContext >> initialize [
 	super initialize.
@@ -615,6 +626,30 @@ DASTContext >> receiver [
 { #category : #accessing }
 DASTContext >> receiver: anObject [
 	receiver := anObject
+]
+
+{ #category : #restart }
+DASTContext >> restart [
+	| baseContext newContext temps nargs |
+	baseContext := self home.
+	self method isNoMethod
+		ifTrue: [ ^ DASTContext
+				newNoMethodContextWithProgram: baseContext method nodeAST
+				temps: baseContext allTemps
+				evaluator: baseContext evaluator ].
+	newContext := DASTContext
+		newWithSender: baseContext sender
+		receiver: baseContext receiver
+		messageNode: baseContext messageNode
+		evaluator: baseContext evaluator.
+	nargs := baseContext messageNode arguments.
+	temps := baseContext allTemps reverse.
+	nargs
+		doWithIndex: [ :arg :i | 
+			| temp |
+			temp := temps at: i.
+			newContext at: temp name put: temp value ].
+	^ newContext
 ]
 
 { #category : #'private-exceptions' }

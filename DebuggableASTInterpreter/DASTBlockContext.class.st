@@ -57,6 +57,11 @@ DASTBlockContext >> findLocalVariable: aName [
 		
 ]
 
+{ #category : #accessing }
+DASTBlockContext >> home [ 
+	^ self parent home
+]
+
 { #category : #initialization }
 DASTBlockContext >> initializeContext [
 	

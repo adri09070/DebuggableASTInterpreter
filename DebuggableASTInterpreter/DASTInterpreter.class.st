@@ -197,26 +197,9 @@ DASTInterpreter >> receiver [
 
 { #category : #evaluation }
 DASTInterpreter >> restart: aDASTContext [
-	| newContext temps nargs methodContext |
+
+	currentContext := aDASTContext restart.
 	
-	methodContext := aDASTContext.
-	[ methodContext isBlockContext ]
-		whileTrue: [ methodContext := methodContext parent ].
-	
-	newContext := 
-		DASTContext
-			newWithSender: methodContext sender 
-			receiver: methodContext receiver 
-			messageNode: methodContext messageNode
-			evaluator: methodContext evaluator.
-	nargs := methodContext messageNode arguments.
-	temps := methodContext allTemps reverse.
-	nargs doWithIndex: [ :arg :i | | temp |
-		temp := temps at: i.
-		newContext at: temp name put: temp value
-	].
-	
-	currentContext := newContext
 ]
 
 { #category : #private }

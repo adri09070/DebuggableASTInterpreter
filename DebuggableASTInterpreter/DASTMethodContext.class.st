@@ -53,6 +53,11 @@ DASTMethodContext >> highlightInterval [
 ]
 
 { #category : #accessing }
+DASTMethodContext >> home [ 
+	^ self
+]
+
+{ #category : #accessing }
 DASTMethodContext >> icon [
 	^ Smalltalk iconNamed: #smallWarningIcon
 ]
