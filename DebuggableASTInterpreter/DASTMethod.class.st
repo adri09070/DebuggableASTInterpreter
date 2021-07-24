@@ -5,8 +5,14 @@ Class {
 		'evaluatePrimitive',
 		'evaluator'
 	],
-	#category : 'DebuggableASTInterpreter-Closures'
+	#category : #'DebuggableASTInterpreter-Closures'
 }
+
+{ #category : #'local to remote' }
+DASTMethod >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
+	^ self methodClass remote methodDict asRemoteMethodDictionary
+		at: self selector
+]
 
 { #category : #'gt-inspector-extension' }
 DASTMethod >> bodyOffset [
