@@ -32,6 +32,11 @@ DASTBlock class >> lookupSelectorAndMarkTraversedClasses: selector [
 	^ self lookupSelector: selector
 ]
 
+{ #category : #roles }
+DASTBlock class >> role [
+	^ #BlockClosure
+]
+
 { #category : #accessing }
 DASTBlock >> basicClass [
 	^ self class

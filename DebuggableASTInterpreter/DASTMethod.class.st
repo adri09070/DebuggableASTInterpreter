@@ -8,6 +8,11 @@ Class {
 	#category : #'DebuggableASTInterpreter-Closures'
 }
 
+{ #category : #constants }
+DASTMethod class >> role [ 
+	^ #CompiledMethod
+]
+
 { #category : #'local to remote' }
 DASTMethod >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	^ self methodClass remote methodDict asRemoteMethodDictionary
