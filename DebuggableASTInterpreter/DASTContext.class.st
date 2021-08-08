@@ -343,10 +343,10 @@ DASTContext >> findVariable: aByteSymbol [
 	(self findLocalVariable: aByteSymbol)
 		ifNotNil: [ :assoc | ^ assoc value ].
 		
-	(receiver basicClass bindingOf: aByteSymbol)
+	(receiver basicClass asRemoteClass bindingOf: aByteSymbol)
 		ifNotNil: [ :bind | ^ bind value ].
 	
-	(receiver basicClass asClassDefinition environment
+	(receiver basicClass asRemoteClass asClassDefinition environment
 		bindingOf: aByteSymbol) ifNotNil: [ :bind | ^ bind value ].
 	"global variables"
 	"(self findGlobalVariable: aByteSymbol) 
