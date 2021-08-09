@@ -368,13 +368,12 @@ DASTContext >> findVariable: aByteSymbol [
 { #category : #'accessing - private' }
 DASTContext >> getClassForLookup [
 	| aClass |
-	
-	aClass := messageNode isSuperSend 
-			ifTrue: [messageNode methodNode methodClass superclass] 
-			ifFalse: [self evaluator classOf: receiver].
-	^ (aClass == UnhandledError) 
-			ifTrue: [ DASTErrorNonInteractive ]
-			ifFalse: [ aClass ].
+	aClass := messageNode isSuperSend
+		ifTrue: [ messageNode methodNode methodClass superclass ]
+		ifFalse: [ self evaluator classOf: receiver ].
+	^ aClass == UnhandledError
+		ifTrue: [ DASTErrorNonInteractive ]
+		ifFalse: [ aClass ]
 ]
 
 { #category : #'gt-extension' }
