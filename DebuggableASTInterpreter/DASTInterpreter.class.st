@@ -449,7 +449,8 @@ DASTInterpreter >> visitMessageNode: aRBMessageNode [
 	currentContext setTemporalVariablesNamed: method argumentNames values: arguments.
 	aRBMessageNode selector = #error: ifTrue: [ 
 		currentContext unhandledException: true.
-		(PBHybridDebugger withInterpreter: self) openWithSpec ].
+		(PBHybridDebugger withInterpreter: self) openWithSpec.
+		self error: 'Reflective instruction failed' ].
 	
 ]
 
