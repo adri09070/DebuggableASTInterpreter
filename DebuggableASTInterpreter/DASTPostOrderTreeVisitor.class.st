@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'stack'
 	],
-	#category : 'DebuggableASTInterpreter-NodeArrangement'
+	#category : #'DebuggableASTInterpreter-NodeArrangement'
 }
 
 { #category : #api }
@@ -59,6 +59,11 @@ DASTPostOrderTreeVisitor >> visitBlockNode: aRBBlockNode [
 DASTPostOrderTreeVisitor >> visitCascadeNode: aRBCascadeNode [ 
 	stack push: aRBCascadeNode.
 	aRBCascadeNode children reverse do: [ :e | e acceptVisitor: self ]
+]
+
+{ #category : #visiting }
+DASTPostOrderTreeVisitor >> visitClassVariableNode: aVariableNode [ 
+	stack push: aVariableNode
 ]
 
 { #category : #visiting }
