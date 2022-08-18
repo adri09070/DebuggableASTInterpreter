@@ -311,6 +311,11 @@ DASTInterpreter >> visitArgumentNode: aRBArgumentNode [
 ]
 
 { #category : #visiting }
+DASTInterpreter >> visitArgumentVariableNode: aRBVariableNode [ 
+	self visitVariableNode: aRBVariableNode .
+]
+
+{ #category : #visiting }
 DASTInterpreter >> visitArrayNode: aRBArrayNode [ 
 	| literals size arrayMirror |
 	size := aRBArrayNode statements size.

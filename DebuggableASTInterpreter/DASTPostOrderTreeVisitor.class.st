@@ -38,6 +38,12 @@ DASTPostOrderTreeVisitor >> visitArgumentNode: aRBArgumentNode [
 ]
 
 { #category : #visiting }
+DASTPostOrderTreeVisitor >> visitArgumentVariableNode: aRBVariableNode [ 
+
+	stack push: aRBVariableNode 
+]
+
+{ #category : #visiting }
 DASTPostOrderTreeVisitor >> visitArrayNode: aRBArrayNode [ 
 	stack push: aRBArrayNode.
 	aRBArrayNode children reverse do: [ :e | e acceptVisitor: self ].	
@@ -136,6 +142,12 @@ DASTPostOrderTreeVisitor >> visitSuperNode: aRBSuperNode [
 { #category : #'as yet unclassified' }
 DASTPostOrderTreeVisitor >> visitTemporaryNode: aRBTemporaryNode [ 
 	stack push: aRBTemporaryNode
+]
+
+{ #category : #visiting }
+DASTPostOrderTreeVisitor >> visitTemporaryVariableNode: aRBVariableNode [ 
+
+	stack push: aRBVariableNode 
 ]
 
 { #category : #visiting }
