@@ -8,6 +8,22 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+DASTInterpreterClassForTests >> assignateArgumentToLocalVar: anArgument [
+	| x |
+	x := anArgument.
+	^ x
+	 
+]
+
+{ #category : #'as yet unclassified' }
+DASTInterpreterClassForTests >> assignateArgumentToLocalVarInsideBlock: anArgument [
+	| x |
+	true ifTrue: [ x := anArgument ].
+	^ x
+	 
+]
+
+{ #category : #'as yet unclassified' }
 DASTInterpreterClassForTests >> blockAsParameter: aBlock [
 	^ aBlock value: 3
 ]

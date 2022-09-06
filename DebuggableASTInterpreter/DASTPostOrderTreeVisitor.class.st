@@ -7,6 +7,13 @@ Class {
 	#category : #'DebuggableASTInterpreter-NodeArrangement'
 }
 
+{ #category : #api }
+DASTPostOrderTreeVisitor >> flattenedNodesFrom: aRBNode [ 
+	(aRBNode methodNode body addReturn; yourself) acceptVisitor: self.
+	^ self stack.
+	
+]
+
 { #category : #visiting }
 DASTPostOrderTreeVisitor >> initialize [ 
 
@@ -74,6 +81,12 @@ DASTPostOrderTreeVisitor >> visitLiteralArrayNode: aRBLiteralArrayNode [
 DASTPostOrderTreeVisitor >> visitLiteralNode: aRBLiteralValueNode [ 
 
 	stack push: aRBLiteralValueNode
+]
+
+{ #category : #visiting }
+DASTPostOrderTreeVisitor >> visitLiteralValueNode: aRBLiteralValueNode [ 
+
+	^ self visitLiteralNode: aRBLiteralValueNode 
 ]
 
 { #category : #visiting }

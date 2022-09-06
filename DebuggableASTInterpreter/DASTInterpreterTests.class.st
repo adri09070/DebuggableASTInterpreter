@@ -11,6 +11,22 @@ DASTInterpreterTests >> testAddTwoNumbers [
 		  equals: 3
 ]
 
+{ #category : #'tests-variables-local' }
+DASTInterpreterTests >> testArgumentVarUsedToSetLocalVar [
+	
+	self assert: (self evaluateProgram:  'DASTInterpreterClassForTests new assignateArgumentToLocalVar: 4') 
+		  equals: 4
+		
+]
+
+{ #category : #'tests-variables-local' }
+DASTInterpreterTests >> testArgumentVarUsedToSetLocalVarInsideBlock [
+	
+	self assert: (self evaluateProgram:  'DASTInterpreterClassForTests new assignateArgumentToLocalVarInsideBlock: 4') 
+		  equals: 4
+		
+]
+
 { #category : #tests }
 DASTInterpreterTests >> testArray [
 
@@ -237,7 +253,6 @@ DASTInterpreterTests >> testFalse [
 
 { #category : #'tests-variables-class' }
 DASTInterpreterTests >> testGetClassVariableFromMethodInInstanceSide [
-	self skip.
 	self assert: (self evaluateProgram: 'DASTInterpreterClassForTests3 new getClassVariable' ) 
 		  equals: 42
 		
@@ -249,6 +264,13 @@ DASTInterpreterTests >> testIfTrue [
 
 	self assert: (self evaluateProgram: 'true ifTrue: [3]' ) 
 		  equals: 3
+]
+
+{ #category : #'tests-blocks' }
+DASTInterpreterTests >> testIfTrueThatWritesLocalVar [
+
+	self assert: (self evaluateProgram: '|x| x := 1 . true ifTrue: [x:=2] . x' ) 
+		  equals: 2
 ]
 
 { #category : #'tests-blocks' }
@@ -290,6 +312,19 @@ DASTInterpreterTests >> testIncreaseProgramCounterWhenSteppingOverANode [
 { #category : #'tests-program counter' }
 DASTInterpreterTests >> testInitialProgramCounter [
 	self assert: interpreter programCounter equals: 0
+]
+
+{ #category : #'tests-variables-instance' }
+DASTInterpreterTests >> testInitializeWithInstanceVariables [
+	
+	self assert: (self evaluateProgram: '| obj | 
+													obj := DASTInterpreterClassForTests6 new initializeIV1: 1 IV2: 2 . 
+													obj iv1' ) 
+		  equals: 1.
+	self assert: (self evaluateProgram: '| obj | 
+													obj := DASTInterpreterClassForTests6 new initializeIV1: 1 IV2: 2 . 
+													obj iv2' ) 
+		  equals: 2
 ]
 
 { #category : #'tests-variables-instance' }
@@ -386,6 +421,20 @@ DASTInterpreterTests >> testInterpretItselfAddition [
 		  equals: 6
 ]
 
+{ #category : #'tests-reflective-interpreter' }
+DASTInterpreterTests >> testInterpretItselfInteger [
+
+	self assert: (self evaluateProgram: 'DASTInterpreter new initializeWithProgram: (RBParser parseExpression: ''1''); evaluate')
+		  equals: 1
+]
+
+{ #category : #'tests-reflective-interpreter' }
+DASTInterpreterTests >> testInterpretItselfLessThan [
+
+	self assert: (self evaluateProgram: 'DASTInterpreter new initializeWithProgram: (RBParser parseExpression: ''1<2''); evaluate')
+		  equals: true
+]
+
 { #category : #'tests-blocks' }
 DASTInterpreterTests >> testInterpretSendingMessageDifferentFromValueToBlock [
 	
@@ -479,10 +528,25 @@ DASTInterpreterTests >> testLocalVarScopeWhenAccessedFromBlockAnidated [
 ]
 
 { #category : #'tests-variables-local' }
+DASTInterpreterTests >> testLocalVarScopeWhenAccessedFromSenderContext [
+
+	self should: [ self evaluateProgram:  'DASTInterpreterClassForTests4 new methodWithLocalVarZSetAs5AndThatReturns43. x' ]
+		  raise: Error
+]
+
+{ #category : #'tests-variables-local' }
 DASTInterpreterTests >> testLocalVarScopeWhenAsignedInOuterContextOfBlockAndUpdatedFromBlock [
 	
 	self assert: (self evaluateProgram: '^ DASTInterpreterClassForTests new getBlockThatAccessesVariableTSetAs42 value' ) 
 		  equals: 42
+]
+
+{ #category : #'tests-variables-local' }
+DASTInterpreterTests >> testLocalVarScopeWhenDefinedInBlockSenderAndNotInBlockHome [
+
+	self should: [self evaluateProgram:  '(1 to: 3) collect: [ :i | index ]'] 
+		  raise: Exception
+	
 ]
 
 { #category : #'tests-variables-local' }
@@ -566,9 +630,17 @@ DASTInterpreterTests >> testMoreThan [
 		  equals: false
 ]
 
+{ #category : #'tests-blocks' }
+DASTInterpreterTests >> testNonLocalReturn [
+
+	self assert: (self evaluateProgram: '(DASTInterpreterClassForTests new getBlockThatReturns32) value' ) 
+		  equals: false
+	
+]
+
 { #category : #'tests-exceptions-ondo' }
 DASTInterpreterTests >> testOnDoChainExceptiongCatch [
-	self skip.
+	
 	self assert: (self evaluateProgram: '[ 1/0 ] on: SyntaxErrorNotification, ZeroDivide do: [ 1 ]') 
 		  equals: 1	
 ]
@@ -641,6 +713,13 @@ DASTInterpreterTests >> testPrimitiveAdd [
 ]
 
 { #category : #'tests-primitives' }
+DASTInterpreterTests >> testPrimitiveCopy [
+
+	self assert: (self evaluateProgram: '(Point x:1 y:2) copy')
+		  equals: 1@2 
+]
+
+{ #category : #'tests-primitives' }
 DASTInterpreterTests >> testPrimitiveSubstract [
 
 	self assert: (self evaluateProgram: '^ 1-2')
@@ -683,10 +762,36 @@ DASTInterpreterTests >> testSendMessageToBlock [
 
 { #category : #'tests-variables-class' }
 DASTInterpreterTests >> testSetAndGetClassVariableFromMethodInInstanceSide [
-	self skip.
 	"ToDo: reimplement when the environment contains representation of objects"
 	self assert: (self evaluateProgram: 'DASTInterpreterClassForTests3 new setClassVariable. DASTInterpreterClassForTests3 new getClassVariable' ) 
 		  equals: 42
+		
+
+]
+
+{ #category : #'tests-variables-class' }
+DASTInterpreterTests >> testSetAndGetInheritedClassVariableFromMethodInInstanceSide [
+	DASTInterpreterClassForTests4 new setClassVar5: nil.
+	self assert: (self evaluateProgram: 'DASTInterpreterClassForTests4 new getClassVar5' ) 
+		  equals: 5
+		
+
+]
+
+{ #category : #'tests-variables-class' }
+DASTInterpreterTests >> testSetInheritedClassVariableFromMethodInInstanceSide [
+	DASTInterpreterClassForTests4 new setClassVar5: nil.
+	self assert: (self evaluateProgram: 'DASTInterpreterClassForTests4 new setClassVar5: 5' ) 
+		  equals: 5
+		
+
+]
+
+{ #category : #'tests-super' }
+DASTInterpreterTests >> testSuperInsideBlock [
+
+	self assert: (self evaluateProgram: 'DASTInterpreterClassForTests4 new m3' ) 
+		  equals: 4
 		
 
 ]
@@ -709,11 +814,21 @@ DASTInterpreterTests >> testSuperTheReceiverRemains1 [
 
 ]
 
+{ #category : #'tests-blocks' }
+DASTInterpreterTests >> testToDo [
+
+	self assert: (self evaluateProgram: '|x| 
+													x := 0.
+													1 to: 10 do: [:each | x := x + each].
+													x' ) 
+		  equals: 55
+]
+
 { #category : #'tests-transcript' }
 DASTInterpreterTests >> testTranscript [
 	self skip.
 	self assert: (self evaluateProgram: 'Transcript show: #a' ) 
-		  equals: 1
+		  equals: Transcript
 		
 
 ]
@@ -754,6 +869,31 @@ DASTInterpreterTests >> testVarsLocalScopeLookupIsDoneInExceutionTime [
 	
 	self assert: (self evaluateProgram:  '|block t| t := 42 . block := [ t ] .	t := 69 . ^ DASTInterpreterClassForTests new evaluateBlock: block') 
 		  equals: 69
+		
+]
+
+{ #category : #'tests-variables-local' }
+DASTInterpreterTests >> testVarsLocalVariableModifiedInsideWhileTrue [
+	
+	self assert: (self evaluateProgram:  '| nextValue |
+	nextValue := 1.
+	[ nextValue <= 10 ]
+		whileTrue: [ nextValue := nextValue + 1 ].
+	nextValue') 
+		  equals: 11
+		
+]
+
+{ #category : #'tests-variables-local' }
+DASTInterpreterTests >> testVarsLocalVariableModifiedInsideWhileTrueAndValueBlock [
+	
+	self assert: (self evaluateProgram:  '| nextValue block |
+	nextValue := 1.
+	block := [ :x | x ].
+	[ nextValue <= 10 ]
+		whileTrue: [ block value: nextValue . nextValue := nextValue + 1 ].
+	nextValue') 
+		  equals: 11
 		
 ]
 
