@@ -348,10 +348,22 @@ DASTInterpreter >> visitCascadeNode: aRBCascadeNode [
 ]
 
 { #category : #visiting }
+DASTInterpreter >> visitClassVariableNode: aNode [
+
+	^ self visitLiteralVariableNode: aNode
+]
+
+{ #category : #visiting }
 DASTInterpreter >> visitGlobalNode: aRBGlobalNode [ 
 
 	self stackPush: (currentContext findVariable: aRBGlobalNode name)
 	
+]
+
+{ #category : #visiting }
+DASTInterpreter >> visitGlobalVariableNode: aNode [
+
+	^ self visitLiteralVariableNode: aNode
 ]
 
 { #category : #visiting }
@@ -377,6 +389,21 @@ DASTInterpreter >> visitLiteralNode: aRBLiteralValueNode [
 { #category : #visiting }
 DASTInterpreter >> visitLiteralValueNode: aRBLiteralValueNode [ 
 	self visitLiteralNode: aRBLiteralValueNode
+]
+
+{ #category : #visiting }
+DASTInterpreter >> visitLiteralVariableNode: aNode [
+	"to be backward compatible, we visit for Gloabls here (there used to be no difference)"
+
+	^ self visitGlobalNode: aNode
+]
+
+{ #category : #visiting }
+DASTInterpreter >> visitLocalVariableNode: aNode [
+
+	"call visitTemporaryNode: for backward compatibility"
+
+	^ self visitTemporaryNode: aNode
 ]
 
 { #category : #visiting }
