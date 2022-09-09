@@ -311,6 +311,12 @@ DASTInterpreter >> visitArgumentNode: aRBArgumentNode [
 ]
 
 { #category : #visiting }
+DASTInterpreter >> visitArgumentVariableNode: aRBVariableNode [
+
+	^ self visitTemporaryNode: aRBVariableNode
+]
+
+{ #category : #visiting }
 DASTInterpreter >> visitArrayNode: aRBArrayNode [ 
 	| literals size arrayMirror |
 	size := aRBArrayNode statements size.
@@ -343,10 +349,22 @@ DASTInterpreter >> visitCascadeNode: aRBCascadeNode [
 ]
 
 { #category : #visiting }
+DASTInterpreter >> visitClassVariableNode: aRBVariableNode [
+
+	^ self visitGlobalNode: aRBVariableNode
+]
+
+{ #category : #visiting }
 DASTInterpreter >> visitGlobalNode: aRBGlobalNode [ 
 
 	self stackPush: (currentContext findVariable: aRBGlobalNode name)
 	
+]
+
+{ #category : #visiting }
+DASTInterpreter >> visitGlobalVariableNode: aRBVariableNode [
+
+	^ self visitGlobalNode: aRBVariableNode
 ]
 
 { #category : #visiting }
@@ -462,6 +480,12 @@ DASTInterpreter >> visitTemporaryNode: aRBTemporaryNode [
 	aRBTemporaryNode isDefinition 
 		ifTrue: [ currentContext at: name put: self evaluator nilObject ]
 		ifFalse: [ self stackPush: (currentContext findVariable: name)]
+]
+
+{ #category : #visiting }
+DASTInterpreter >> visitTemporaryVariableNode: aRBVariableNode [
+
+	^ self visitTemporaryNode: aRBVariableNode
 ]
 
 { #category : #visiting }
