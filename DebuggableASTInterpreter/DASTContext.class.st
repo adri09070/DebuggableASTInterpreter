@@ -19,7 +19,8 @@ Class {
 		'tempVarIndex',
 		'tempVarsNamesIndexes',
 		'unhandledException',
-		'evaluator'
+		'evaluator',
+		'isDead'
 	],
 	#classVars : [
 		'valueToBlockMessages'
@@ -447,6 +448,18 @@ DASTContext >> isBlockContext [
 { #category : #testing }
 DASTContext >> isCurrentContext [
 	^ self evaluator interpreter currentContext = self
+]
+
+{ #category : #testing }
+DASTContext >> isDead [
+
+	^ isDead ifNil: [ isDead := true ]
+]
+
+{ #category : #testing }
+DASTContext >> isDead: aBool [
+
+	isDead := aBool
 ]
 
 { #category : #testing }

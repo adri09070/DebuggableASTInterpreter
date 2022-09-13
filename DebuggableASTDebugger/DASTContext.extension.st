@@ -16,6 +16,14 @@ DASTContext >> method [
 ]
 
 { #category : #'*DebuggableASTDebugger' }
+DASTContext >> methodContext [
+
+	^ self isBlockContext
+		  ifTrue: [ self parent methodContext ]
+		  ifFalse: [ self ]
+]
+
+{ #category : #'*DebuggableASTDebugger' }
 DASTContext >> namedTempAt: index [
 	^ self variablesDict at: (tempVarsNamesIndexes keyAtValue: index)
 ]
