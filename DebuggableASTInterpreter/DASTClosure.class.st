@@ -37,7 +37,7 @@ DASTClosure >> body [
 { #category : #testing }
 DASTClosure >> doSemanticAnalysis [
 
-	^ nodeAST 
+	^ nodeAST doSemanticAnalysis
 ]
 
 { #category : #initialization }
