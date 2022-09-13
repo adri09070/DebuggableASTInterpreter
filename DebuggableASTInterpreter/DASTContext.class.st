@@ -56,7 +56,7 @@ DASTContext class >> newWithSender: aDASTContext receiver: aReceiver messageNode
 	| context |
 	context := ((aDASTEvaluator isEPDASTBlockMirror: aReceiver ) 
 					and: [ " Check if the message is one of the variants of value. This is very ugly and must be changed when implementing environments "
-						self valueToBlockMessages keys includes: aRBMessageNode selector ])
+						self valueToBlockMessages includes: aRBMessageNode selector ])
 		ifTrue: [ DASTBlockContext new ]
 		ifFalse: [ DASTMethodContext new ].
 	context sender: aDASTContext;
@@ -68,8 +68,17 @@ DASTContext class >> newWithSender: aDASTContext receiver: aReceiver messageNode
 
 { #category : #'instance creation' }
 DASTContext class >> valueToBlockMessages [
-	^ valueToBlockMessages 
-		ifNil: [ valueToBlockMessages := (BlockClosure methodDict select: [ :e | (201 to: 206) includes: e primitive ]) collect: [ :e | e selector ] ]
+
+	^ valueToBlockMessages ifNil: [ 
+		  valueToBlockMessages := (BlockClosure methodDict select: [ :e | "Is it really better than `(205 to: 209) includes: e primitive` ?"
+			                           #( #value #value: #value:value:
+			                              #value:value:value:
+			                              #value:value:value:value:
+			                              #value #value:value: #value:value:
+			                              #valueNoContextSwitch
+			                              valueNoContextSwitch:
+			                              #valueWithArguments ) includes:
+				                           e selector ]) keys ]
 ]
 
 { #category : #'accessing variables' }
