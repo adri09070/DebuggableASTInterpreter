@@ -70,15 +70,12 @@ DASTContext class >> newWithSender: aDASTContext receiver: aReceiver messageNode
 DASTContext class >> valueToBlockMessages [
 
 	^ valueToBlockMessages ifNil: [ 
-		  valueToBlockMessages := (BlockClosure methodDict select: [ :e | "Is it really better than `(205 to: 209) includes: e primitive` ?"
-			                           #( #value #value: #value:value:
-			                              #value:value:value:
-			                              #value:value:value:value:
-			                              #value #value:value: #value:value:
-			                              #valueNoContextSwitch
-			                              valueNoContextSwitch:
-			                              #valueWithArguments ) includes:
-				                           e selector ]) keys ]
+		  valueToBlockMessages := #( #value #value: #value:value:
+		                             #value:value:value: #value:value:value:value:
+		                             #value #value:value: #value:value:
+		                             #valueNoContextSwitch
+		                             valueNoContextSwitch:
+		                             #valueWithArguments ) ]
 ]
 
 { #category : #'accessing variables' }
