@@ -34,12 +34,6 @@ DASTClosure >> body [
 	^ nodeAST body
 ]
 
-{ #category : #testing }
-DASTClosure >> doSemanticAnalysis [
-
-	^ nodeAST doSemanticAnalysis
-]
-
 { #category : #initialization }
 DASTClosure >> initializeWith: aRBNode [
 

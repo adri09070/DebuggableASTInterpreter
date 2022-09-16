@@ -522,8 +522,7 @@ DASTContext >> methodOrBlock [
 { #category : #accessing }
 DASTContext >> methodOrBlock: aDASTClosure [
 
-	closure := aDASTClosure.
-	closure doSemanticAnalysis
+	closure := aDASTClosure
 ]
 
 { #category : #'private-exceptions' }
