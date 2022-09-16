@@ -453,7 +453,7 @@ DASTContext >> isCurrentContext [
 { #category : #testing }
 DASTContext >> isDead [
 
-	^ isDead ifNil: [ isDead := true ]
+	^ isDead ifNil: [ isDead := false ]
 ]
 
 { #category : #testing }
