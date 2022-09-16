@@ -19,6 +19,12 @@ DASTInterpreter >> astCache: aCollection [
 	astCache := aCollection
 ]
 
+{ #category : #private }
+DASTInterpreter >> cannotReturn: value to: homeContext [
+
+	^ BlockCannotReturn result: value from: homeContext
+]
+
 { #category : #accessing }
 DASTInterpreter >> context [
 	self shouldBeImplemented.
@@ -440,11 +446,17 @@ DASTInterpreter >> visitMethodNode: aRBBlockNode [
 
 { #category : #visiting }
 DASTInterpreter >> visitReturnNode: aRBReturneNode [
-	| value senderContext |
-	
+
+	| value senderContext methodContext |
 	value := currentContext stack top.
-	senderContext := currentContext returnContext. 
-	
+	senderContext := currentContext returnContext.
+	methodContext := self currentContext methodContext.
+
+	(self currentContext isBlockContext and: [ methodContext isDead ]) 
+		ifTrue: [ self cannotReturn: value to: senderContext ].
+
+	methodContext isDead: true.
+
 	currentContext := senderContext.
 	self stackPush: value
 ]
@@ -456,16 +468,15 @@ DASTInterpreter >> visitSelfNode: aRBSelfNode [
 ]
 
 { #category : #visiting }
-DASTInterpreter >> visitSequenceNode: aRBSequenceNode [ 
-	
+DASTInterpreter >> visitSequenceNode: aRBSequenceNode [
+
 	| lastResult |
-	lastResult := self currentContext isBlockContext 
-		ifTrue: [ self stackPop ]
-		ifFalse: [ self currentContext receiver ].
-	
+	lastResult := self currentContext isBlockContext
+		              ifTrue: [ self stackPop ]
+		              ifFalse: [ self currentContext receiver ].
+	currentContext isDead: true.
 	currentContext := currentContext sender.
-	self stackPush: lastResult. 
-	
+	self stackPush: lastResult
 ]
 
 { #category : #visiting }

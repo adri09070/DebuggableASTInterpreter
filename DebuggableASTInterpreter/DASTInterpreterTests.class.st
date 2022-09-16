@@ -633,9 +633,11 @@ DASTInterpreterTests >> testMoreThan [
 { #category : #'tests-blocks' }
 DASTInterpreterTests >> testNonLocalReturn [
 
-	self assert: (self evaluateProgram: '(DASTInterpreterClassForTests new getBlockThatReturns32) value' ) 
-		  equals: false
-	
+	self
+		should: [ 
+			self evaluateProgram:
+				'(DASTInterpreterClassForTests new getBlockThatReturns32) value' ]
+		raise: BlockCannotReturn
 ]
 
 { #category : #'tests-exceptions-ondo' }

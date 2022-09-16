@@ -19,7 +19,8 @@ Class {
 		'tempVarIndex',
 		'tempVarsNamesIndexes',
 		'unhandledException',
-		'evaluator'
+		'evaluator',
+		'isDead'
 	],
 	#classVars : [
 		'valueToBlockMessages'
@@ -441,6 +442,18 @@ DASTContext >> isCurrentContext [
 ]
 
 { #category : #testing }
+DASTContext >> isDead [
+
+	^ isDead ifNil: [ isDead := false ]
+]
+
+{ #category : #accessing }
+DASTContext >> isDead: aBool [
+
+	isDead := aBool
+]
+
+{ #category : #testing }
 DASTContext >> isEmpty [
 	
 	^ variablesDict isEmpty.
@@ -512,6 +525,14 @@ DASTContext >> messageNode: aRBMessageNode [
 { #category : #accessing }
 DASTContext >> methodClass [
 	^ self methodOrBlock methodClass
+]
+
+{ #category : #accessing }
+DASTContext >> methodContext [
+
+	^ self isBlockContext
+		  ifTrue: [ self parent methodContext ]
+		  ifFalse: [ self ]
 ]
 
 { #category : #accessing }
