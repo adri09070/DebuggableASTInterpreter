@@ -787,6 +787,28 @@ DASTInterpreterTests >> testSetInheritedClassVariableFromMethodInInstanceSide [
 
 ]
 
+{ #category : #'tests-blocks' }
+DASTInterpreterTests >> testSteppingPutsExecutedNodeInStackOfRightContext [
+
+	| currentContext |
+	interpreter initializeWithProgram: (RBParser parseExpression: '^ 1').
+
+	currentContext := interpreter currentContext.
+
+	self assert: currentContext executedNodes isEmpty.
+
+	"steps the 1 literal value node"
+	interpreter stepInto.
+
+	self assert: currentContext executedNodes size equals: 1.
+
+	interpreter stepInto.
+
+	"steps the return node, should be pushed in current context and not sender context"
+
+	self assert: currentContext executedNodes size equals: 2
+]
+
 { #category : #'tests-super' }
 DASTInterpreterTests >> testSuperInsideBlock [
 

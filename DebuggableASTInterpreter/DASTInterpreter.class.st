@@ -263,14 +263,16 @@ DASTInterpreter >> stackTop [
 
 { #category : #evaluation }
 DASTInterpreter >> stepInto [
-	| node |
-	currentContext canExecute
-		ifFalse: [ DASTEvaluationTerminated signal ].
+
+	| node initialContext |
+	initialContext := currentContext.
+	currentContext canExecute ifFalse: [ DASTEvaluationTerminated signal ].
 	node := currentContext nodes pop.
 	currentContext currentNode: node.
 	self visit: node.
 	self increasePC.
-	currentContext executedNodes push: node.
+	"We use initialContext instead of currentContext as currentContext may have changed it a return node or sequence node has been visited"
+	initialContext executedNodes push: node.
 	^ self currentContext
 ]
 
