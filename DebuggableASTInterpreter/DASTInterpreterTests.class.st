@@ -228,7 +228,7 @@ DASTInterpreterTests >> testExecutedNodesAfterStepInto [
 	interpreter stepInto.
 	self
 		assert: interpreter currentContext executedNodes
-		equals: (DASTStack new push: (RBGlobalNode named: #Point); yourself)
+		equals: (DASTStack new push: (RBVariableNode named: #Point); yourself)
 ]
 
 { #category : #'tests-contexts' }
@@ -236,7 +236,7 @@ DASTInterpreterTests >> testExecutedNodesAfterStepOver [
 	| expectedStack |
 	self initializeProgram: '^Point x: 1 y: 2'.
 	expectedStack := DASTStack new.
-	expectedStack push: (RBGlobalNode named: #Point).
+	expectedStack push: (RBVariableNode named: #Point).
 	expectedStack push: (RBLiteralValueNode value: 1).
 	expectedStack push: (RBLiteralValueNode value: 2).
 	interpreter stepOver.
