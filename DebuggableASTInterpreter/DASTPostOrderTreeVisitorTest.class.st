@@ -22,14 +22,20 @@ DASTPostOrderTreeVisitorTest >> assertVisitorTop: visitor equals: aString [
 DASTPostOrderTreeVisitorTest >> testCascade [
 
 	| ast visitor |
-	ast := RBParser parseExpression: ' ^ DASTInterpreterClassForTests5 new m3; m4'.
+	ast := RBParser parseExpression:
+		       ' ^ DASTInterpreterClassForTests5 new m3; m4'.
 	visitor := DASTPostOrderTreeVisitor new.
-	
+
 	ast acceptVisitor: visitor.
-	
-	"
-	self assertVisitorTop: visitor equals: '2'.
-	self assertVisitorStack: visitor equalsStack: { '2'. '^2' }."
+
+	self assertVisitorTop: visitor equals: 'DASTInterpreterClassForTests5'.
+	self assertVisitorStack: visitor equalsStack: { 
+			'DASTInterpreterClassForTests5'.
+			'DASTInterpreterClassForTests5 new'.
+			'DASTInterpreterClassForTests5 new m3'.
+			'DASTInterpreterClassForTests5 new m4'.
+			'DASTInterpreterClassForTests5 new m3; m4'.
+			'^ DASTInterpreterClassForTests5 new m3; m4' }
 ]
 
 { #category : #tests }

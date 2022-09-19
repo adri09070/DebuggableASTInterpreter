@@ -401,6 +401,12 @@ DASTInterpreter >> visitLiteralValueNode: aRBLiteralValueNode [
 ]
 
 { #category : #visiting }
+DASTInterpreter >> visitLiteralVariableNode: aRBVariableNode [
+
+	^ self visitGlobalNode: aRBVariableNode
+]
+
+{ #category : #visiting }
 DASTInterpreter >> visitMessageNode: aRBMessageNode [ 
 	| arguments receiver method newContext |
 	" Resolve Arguments "
