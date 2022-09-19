@@ -200,14 +200,22 @@ DASTInterpreterTests >> testExceptionSignalInSequence [
 
 { #category : #'tests-contexts' }
 DASTInterpreterTests >> testExecutedNodesAfterExecution [
+
 	| nodesStackBackup contextBackup |
 	self initializeProgram: 'Point x: 1 y: 2'.
 	contextBackup := interpreter currentContext.
 	nodesStackBackup := contextBackup nodes asArray.
 	interpreter evaluate.
-	self flag: 'That cannot work, as the execution for the #x:y: method "inserts" the body of the method node in the nodes stack'.
+
+	"The sequence node (that is the last node) is not executed as the return node is executed before"
 	self
-		assert: interpreter currentContext executedNodes asArray reversed
+		assertCollection: contextBackup executedNodes asArray reversed
+		equals: nodesStackBackup allButLast.
+
+	"The concatenation of all the executed nodes and all nodes that haven't been executed is equal to all nodes"
+	self
+		assertCollection:
+		(contextBackup nodes , contextBackup executedNodes reversed) asArray
 		equals: nodesStackBackup
 ]
 
@@ -787,6 +795,28 @@ DASTInterpreterTests >> testSetInheritedClassVariableFromMethodInInstanceSide [
 		  equals: 5
 		
 
+]
+
+{ #category : #'tests-blocks' }
+DASTInterpreterTests >> testSteppingPutsExecutedNodeInStackOfRightContext [
+
+	| currentContext |
+	interpreter initializeWithProgram: (RBParser parseExpression: '^ 1').
+
+	currentContext := interpreter currentContext.
+
+	self assert: currentContext executedNodes isEmpty.
+
+	"steps the 1 literal value node"
+	interpreter stepInto.
+
+	self assert: currentContext executedNodes size equals: 1.
+
+	interpreter stepInto.
+
+	"steps the return node, should be pushed in current context and not sender context"
+
+	self assert: currentContext executedNodes size equals: 2
 ]
 
 { #category : #'tests-super' }
