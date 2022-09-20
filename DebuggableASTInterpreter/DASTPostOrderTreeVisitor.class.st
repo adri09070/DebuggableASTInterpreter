@@ -108,6 +108,12 @@ DASTPostOrderTreeVisitor >> visitLiteralValueNode: aRBLiteralValueNode [
 ]
 
 { #category : #visiting }
+DASTPostOrderTreeVisitor >> visitLiteralVariableNode: aRBVariableNode [
+
+	^ self visitGlobalNode: aRBVariableNode
+]
+
+{ #category : #visiting }
 DASTPostOrderTreeVisitor >> visitMessageNode: aRBMessageNode [ 
 
 	stack push: aRBMessageNode.
