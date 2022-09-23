@@ -8,17 +8,23 @@ Class {
 BaselineOfDebuggableASTInterpreter >> baseline: spec [
 
 	<baseline>
-	spec for: #common do: [ 
+	spec for: #common do: [ "Dependencies""Groups"
+		spec
+			baseline: 'Ghost'
+			with: [ spec repository: 'gitlab://gitlab.inria.fr:RMOD/Ghost' ].
 
 		"Packages"
 		spec
 			package: 'DebuggableASTInterpreter';
-			package: 'DebuggableASTDebugger' with: [ 
-				spec requires: #( 'DebuggableASTInterpreter' ) ] ].
+			package: 'DebuggableASTDebugger'
+			with: [ spec requires: #( 'DebuggableASTInterpreter' ) ];
+			package: 'DebuggableASTInterpreterOverlays'
+			with: [ spec requires: #( 'DebuggableASTDebugger'
+					   'Ghost' ) ] ].
 
-	"Groups"
 	spec
 		group: 'default' with: #( 'Model' );
 		group: 'Model' with: #( 'DebuggableASTInterpreter' );
-		group: 'Debugger' with: #( 'DebuggableASTDebugger' )
+		group: 'Debugger' with: #( 'DebuggableASTDebugger' );
+		group: 'Overlay' with: #( 'DebuggableASTInterpreterOverlays' )
 ]
