@@ -200,14 +200,22 @@ DASTInterpreterTests >> testExceptionSignalInSequence [
 
 { #category : #'tests-contexts' }
 DASTInterpreterTests >> testExecutedNodesAfterExecution [
+
 	| nodesStackBackup contextBackup |
 	self initializeProgram: 'Point x: 1 y: 2'.
 	contextBackup := interpreter currentContext.
 	nodesStackBackup := contextBackup nodes asArray.
 	interpreter evaluate.
-	self flag: 'That cannot work, as the execution for the #x:y: method "inserts" the body of the method node in the nodes stack'.
+
+	"The sequence node (that is the last node) is not executed as the return node is executed before"
 	self
-		assert: interpreter currentContext executedNodes asArray reversed
+		assertCollection: contextBackup executedNodes asArray reversed
+		equals: nodesStackBackup allButLast.
+
+	"The concatenation of all the executed nodes and all nodes that haven't been executed is equal to all nodes"
+	self
+		assertCollection:
+		(contextBackup nodes , contextBackup executedNodes reversed) asArray
 		equals: nodesStackBackup
 ]
 
