@@ -33,8 +33,8 @@ DASTOverlayInterpreter >> overlayCounter [
 { #category : #visiting }
 DASTOverlayInterpreter >> overlayFor: anObject [
 	^ self objectStateOverlay
-		at: self receiver
-		ifAbsentPut: [ ObjectOverlay on: self receiver ]
+		at: anObject
+		ifAbsentPut: [ ObjectOverlay on: anObject ]
 ]
 
 { #category : #visiting }
@@ -44,9 +44,8 @@ DASTOverlayInterpreter >> overlaysForPC [
 
 { #category : #visiting }
 DASTOverlayInterpreter >> readInstanceVariableNamed: name [
-	^ (self overlayFor: self receiver)
-		readInstanceVariableNamed: name
-		ifAbsent: [ ^ super readInstanceVariableNamed: name ]
+
+	^ self readInstanceVariableNamed: name for: self receiver
 ]
 
 { #category : #visiting }

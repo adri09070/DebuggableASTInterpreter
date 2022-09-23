@@ -19,8 +19,10 @@ DASTSystemEnvironment >> assignClassVariable: name inObject: anObject value: val
 
 { #category : #'variables-instance' }
 DASTSystemEnvironment >> assignInstanceVariable: name inObject: anObject value: value [
-	(anObject class allInstVarNames includes: name)
-		ifTrue: [ anObject instVarNamed: name put: value .  ^ true].
+
+	(anObject class allInstVarNames includes: name) ifTrue: [ 
+		interpreter write: value toInstVarNamed: name.
+		^ true ].
 	^ false
 ]
 

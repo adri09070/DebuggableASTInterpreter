@@ -747,5 +747,5 @@ DASTContext >> write: value toInstVarNamed: name [
 	| index |
 	index := ((self evaluator classOf: self receiver) allInstVarNames indexOf: name).
 	(index = 0) ifTrue: [ InstanceVariableNotFound signalFor: name asString ].
-	self receiver instanceVariableAtIndex: index put: value
+	self receiver instVarAt: index put: value
 ]
