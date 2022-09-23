@@ -497,6 +497,12 @@ DASTInterpreter >> visitTemporaryNode: aRBTemporaryNode [
 ]
 
 { #category : #visiting }
+DASTInterpreter >> visitTemporaryVariableNode: aRBVariableNode [
+
+	^ self visitTemporaryNode: aRBVariableNode
+]
+
+{ #category : #visiting }
 DASTInterpreter >> visitThisContextNode: aRBThisContextNode [ 
 	self stackPush: currentContext
 ]

@@ -14,11 +14,13 @@ DASTDebuggerInterpreterTests >> testFirstNodeToEvaluateInASum [
 
 { #category : #tests }
 DASTDebuggerInterpreterTests >> testStepAfterTheEndOfProgramExcecutionThrowsAnException [
+
 	interpreter initializeWithProgram: (RBParser parseExpression: '1').
-	self assert: (interpreter stepOver; stackTop) equals: 1.
-	self should: [interpreter stepOver; stackTop] raise: DASTEvaluationTerminated 
-	
-	
+
+	"Initializing a program creates a noMethod with body '^ 1' so evaluating the program performs 2 steps over: one to step over the 1 literal value node and one to step over the return node "
+	interpreter evaluate.
+
+	self should: [ interpreter stepOver ] raise: DASTEvaluationTerminated
 ]
 
 { #category : #tests }
