@@ -311,8 +311,9 @@ DASTInterpreter >> visitArgumentNode: aRBArgumentNode [
 ]
 
 { #category : #visiting }
-DASTInterpreter >> visitArgumentVariableNode: aRBVariableNode [ 
-	self visitVariableNode: aRBVariableNode .
+DASTInterpreter >> visitArgumentVariableNode: aRBVariableNode [
+
+	^ self visitTemporaryNode: aRBVariableNode
 ]
 
 { #category : #visiting }
@@ -348,9 +349,9 @@ DASTInterpreter >> visitCascadeNode: aRBCascadeNode [
 ]
 
 { #category : #visiting }
-DASTInterpreter >> visitClassVariableNode: aNode [
+DASTInterpreter >> visitClassVariableNode: aRBVariableNode [
 
-	^ self visitLiteralVariableNode: aNode
+	^ self visitGlobalNode: aRBVariableNode
 ]
 
 { #category : #visiting }
@@ -361,9 +362,9 @@ DASTInterpreter >> visitGlobalNode: aRBGlobalNode [
 ]
 
 { #category : #visiting }
-DASTInterpreter >> visitGlobalVariableNode: aNode [
+DASTInterpreter >> visitGlobalVariableNode: aRBVariableNode [
 
-	^ self visitLiteralVariableNode: aNode
+	^ self visitGlobalNode: aRBVariableNode
 ]
 
 { #category : #visiting }

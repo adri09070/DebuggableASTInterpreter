@@ -40,7 +40,7 @@ DASTPostOrderTreeVisitor >> visitArgumentNode: aRBArgumentNode [
 { #category : #visiting }
 DASTPostOrderTreeVisitor >> visitArgumentVariableNode: aRBVariableNode [ 
 
-	stack push: aRBVariableNode 
+	^ self visitTemporaryNode: aRBVariableNode
 ]
 
 { #category : #visiting }
@@ -68,9 +68,9 @@ DASTPostOrderTreeVisitor >> visitCascadeNode: aRBCascadeNode [
 ]
 
 { #category : #visiting }
-DASTPostOrderTreeVisitor >> visitClassVariableNode: aNode [
+DASTPostOrderTreeVisitor >> visitClassVariableNode: aRBVariableNode [
 
-	^ self visitLiteralVariableNode: aNode
+	^ self visitGlobalNode: aRBVariableNode
 ]
 
 { #category : #visiting }
@@ -79,9 +79,9 @@ DASTPostOrderTreeVisitor >> visitGlobalNode: aRBGlobalNode [
 ]
 
 { #category : #visiting }
-DASTPostOrderTreeVisitor >> visitGlobalVariableNode: aNode [
+DASTPostOrderTreeVisitor >> visitGlobalVariableNode: aRBVariableNode [
 
-	^ self visitLiteralVariableNode: aNode
+	^ self visitGlobalNode: aRBVariableNode
 ]
 
 { #category : #visiting }
@@ -172,9 +172,9 @@ DASTPostOrderTreeVisitor >> visitTemporaryNode: aRBTemporaryNode [
 ]
 
 { #category : #visiting }
-DASTPostOrderTreeVisitor >> visitTemporaryVariableNode: aRBVariableNode [ 
+DASTPostOrderTreeVisitor >> visitTemporaryVariableNode: aRBVariableNode [
 
-	stack push: aRBVariableNode 
+	^ self visitTemporaryNode: aRBVariableNode
 ]
 
 { #category : #visiting }
