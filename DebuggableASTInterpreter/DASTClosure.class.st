@@ -37,11 +37,7 @@ DASTClosure >> body [
 { #category : #initialization }
 DASTClosure >> initializeWith: aRBNode [
 
-	sourceCode := aRBNode sourceCode.
-	nodeAST := aRBNode.
-	numArgs := nodeAST arguments size.
-
-	nodeAST doSemanticAnalysis
+	self nodeAST: aRBNode
 ]
 
 { #category : #accessing }
@@ -78,7 +74,10 @@ DASTClosure >> nodeAST [
 { #category : #accessing }
 DASTClosure >> nodeAST: aRBNode [
 
+	sourceCode := aRBNode sourceCode.
 	nodeAST := aRBNode.
+	numArgs := nodeAST arguments size.
+
 	nodeAST doSemanticAnalysis
 ]
 
