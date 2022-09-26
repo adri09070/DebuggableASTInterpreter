@@ -19,6 +19,12 @@ DASTInterpreter >> astCache: aCollection [
 	astCache := aCollection
 ]
 
+{ #category : #private }
+DASTInterpreter >> cannotReturn: value to: homeContext [
+
+	^ BlockCannotReturn result: value from: homeContext
+]
+
 { #category : #accessing }
 DASTInterpreter >> context [
 	self shouldBeImplemented.
@@ -263,14 +269,16 @@ DASTInterpreter >> stackTop [
 
 { #category : #evaluation }
 DASTInterpreter >> stepInto [
-	| node |
-	currentContext canExecute
-		ifFalse: [ DASTEvaluationTerminated signal ].
+
+	| node initialContext |
+	initialContext := currentContext.
+	currentContext canExecute ifFalse: [ DASTEvaluationTerminated signal ].
 	node := currentContext nodes pop.
 	currentContext currentNode: node.
 	self visit: node.
 	self increasePC.
-	currentContext executedNodes push: node.
+	"We use initialContext instead of currentContext as currentContext may have changed it a return node or sequence node has been visited"
+	initialContext executedNodes push: node.
 	^ self currentContext
 ]
 
@@ -393,10 +401,9 @@ DASTInterpreter >> visitLiteralValueNode: aRBLiteralValueNode [
 ]
 
 { #category : #visiting }
-DASTInterpreter >> visitLiteralVariableNode: aNode [
-	"to be backward compatible, we visit for Gloabls here (there used to be no difference)"
+DASTInterpreter >> visitLiteralVariableNode: aRBVariableNode [
 
-	^ self visitGlobalNode: aNode
+	^ self visitGlobalNode: aRBVariableNode
 ]
 
 { #category : #visiting }
@@ -455,11 +462,17 @@ DASTInterpreter >> visitMethodNode: aRBBlockNode [
 
 { #category : #visiting }
 DASTInterpreter >> visitReturnNode: aRBReturneNode [
-	| value senderContext |
-	
+
+	| value senderContext methodContext |
 	value := currentContext stack top.
-	senderContext := currentContext returnContext. 
-	
+	senderContext := currentContext returnContext.
+	methodContext := self currentContext methodContext.
+
+	(self currentContext isBlockContext and: [ methodContext isDead ]) 
+		ifTrue: [ self cannotReturn: value to: senderContext ].
+
+	methodContext isDead: true.
+
 	currentContext := senderContext.
 	self stackPush: value
 ]
@@ -471,16 +484,15 @@ DASTInterpreter >> visitSelfNode: aRBSelfNode [
 ]
 
 { #category : #visiting }
-DASTInterpreter >> visitSequenceNode: aRBSequenceNode [ 
-	
+DASTInterpreter >> visitSequenceNode: aRBSequenceNode [
+
 	| lastResult |
-	lastResult := self currentContext isBlockContext 
-		ifTrue: [ self stackPop ]
-		ifFalse: [ self currentContext receiver ].
-	
+	lastResult := self currentContext isBlockContext
+		              ifTrue: [ self stackPop ]
+		              ifFalse: [ self currentContext receiver ].
+	currentContext isDead: true.
 	currentContext := currentContext sender.
-	self stackPush: lastResult. 
-	
+	self stackPush: lastResult
 ]
 
 { #category : #visiting }

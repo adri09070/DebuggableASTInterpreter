@@ -108,10 +108,9 @@ DASTPostOrderTreeVisitor >> visitLiteralValueNode: aRBLiteralValueNode [
 ]
 
 { #category : #visiting }
-DASTPostOrderTreeVisitor >> visitLiteralVariableNode: aNode [
-	"to be backward compatible, we visit for Gloabls here (there used to be no difference)"
+DASTPostOrderTreeVisitor >> visitLiteralVariableNode: aRBVariableNode [
 
-	^ self visitGlobalNode: aNode
+	^ self visitGlobalNode: aRBVariableNode
 ]
 
 { #category : #visiting }
