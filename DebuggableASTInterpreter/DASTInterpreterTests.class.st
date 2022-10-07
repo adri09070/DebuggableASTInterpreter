@@ -254,6 +254,23 @@ DASTInterpreterTests >> testExecutedNodesAtExecutionStart [
 ]
 
 { #category : #'tests-primitives' }
+DASTInterpreterTests >> testFailingPrimitiveWithErrorCode [
+
+	interpreter initializeWithProgram:
+		(RBParser parseExpression: '1 become: 2').
+	"We step until the primitive failure, which returns an error code"
+	8 timesRepeat: [ interpreter stepInto ].
+
+	self assert: interpreter stackTop equals: 'inappropriate operation'.
+	
+	"One more step will interpret the pragma node <primitive:error:> that should put the error code in the primitive error variable. In this case, this variable is called 'ec'"
+	interpreter stepInto.
+	self
+		assert: (interpreter currentContext findVariable: 'ec')
+		equals: 'inappropriate operation'
+]
+
+{ #category : #'tests-primitives' }
 DASTInterpreterTests >> testFalse [
 	self assert: (self evaluateProgram: 'false')
 		  equals: false

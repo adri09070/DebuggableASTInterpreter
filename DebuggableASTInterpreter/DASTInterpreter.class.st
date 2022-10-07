@@ -216,28 +216,34 @@ DASTInterpreter >> restart: aDASTContext [
 
 { #category : #private }
 DASTInterpreter >> solvePrimitive: aMethod receiver: anObject arguments: anArray [
+
 	| primitiveResult anInteger |
 	anInteger := aMethod primitive.
-	
 	"primitives applied to blocks:"
 	(anObject isKindOf: DASTClosure) ifTrue: [ 
-		anInteger = 266 ifTrue: [
-			self halt. 
-			^self stackPush: anObject argumentCount. 
-		 ].
+		anInteger = 266 ifTrue: [ 
+			self halt.
+			^ self stackPush: anObject argumentCount ].
 		anInteger = 202 ifTrue: [ 
 			self halt.
-			primitiveResult := anObject tryPrimitive: anInteger withArgs: anArray asArray.
-			^ self stackPush: primitiveResult
-		].
-		DASTPrimitiveFailed signalWithPrimitive: anInteger receiver: anObject 
-	].
+			primitiveResult := anObject
+				                   tryPrimitive: anInteger
+				                   withArgs: anArray asArray.
+			^ self stackPush: primitiveResult ].
+		DASTPrimitiveFailed
+			signalWithPrimitive: anInteger
+			receiver: anObject ].
 	"apply primitive to object"
-	primitiveResult := self evaluator executePrimitiveMethod: aMethod withReceiver: anObject withArguments: anArray asArray.
-	(self evaluator primitiveResultIsError: primitiveResult)
-		ifTrue: [ DASTPrimitiveFailed signalWithPrimitive: anInteger receiver: anObject ].
+	primitiveResult := self evaluator
+		                   executePrimitiveMethod: aMethod
+		                   withReceiver: anObject
+		                   withArguments: anArray asArray.
+	(self evaluator primitiveResultIsError: primitiveResult) ifTrue: [ 
+		DASTPrimitiveFailed
+			signalWithPrimitive: anInteger
+			receiver: anObject
+			errorCode: primitiveResult second ].
 	self stackPush: (self evaluator valueOf: primitiveResult)
-	
 ]
 
 { #category : #stack }
@@ -415,41 +421,47 @@ DASTInterpreter >> visitLocalVariableNode: aNode [
 ]
 
 { #category : #visiting }
-DASTInterpreter >> visitMessageNode: aRBMessageNode [ 
-	| arguments receiver method newContext |
-	" Resolve Arguments "
+DASTInterpreter >> visitMessageNode: aRBMessageNode [
 
-	"self haltIf: [ aRBMessageNode selector = #methodDict ]."
-	arguments := (self stackPop: aRBMessageNode numArgs) reverse.	
-	(aRBMessageNode isCascaded and: [aRBMessageNode isFirstCascaded not]) ifTrue: [ self stackPop ].
+	| arguments receiver method newContext |
+	" Resolve Arguments ""self haltIf: [ aRBMessageNode selector = #methodDict ]."
+	arguments := (self stackPop: aRBMessageNode numArgs) reverse.
+	(aRBMessageNode isCascaded and: [ aRBMessageNode isFirstCascaded not ]) 
+		ifTrue: [ self stackPop ].
 	receiver := self stackPop.
-	
+
 	" Current context initialization (implicit lookup)"
-	newContext := 
-		DASTContext
-			newWithSender: self currentContext 
-			receiver: receiver 
-			messageNode: aRBMessageNode
-			evaluator: self evaluator.
-	
+	newContext := DASTContext
+		              newWithSender: self currentContext
+		              receiver: receiver
+		              messageNode: aRBMessageNode
+		              evaluator: self evaluator.
+
 	" Lookup"
 	method := newContext methodOrBlock.
 	" Apply - invoke method "
-	(aRBMessageNode isCascaded and: [aRBMessageNode parent messages last ~= aRBMessageNode]) ifTrue: [ self stackPush: receiver ]. 
-	(method isPrimitive and: [method isMessageValue not and: [method isOnDo not]] )  
-	ifTrue: [ 
-		[ ^ self solvePrimitive: method receiver: receiver arguments: arguments ]
-		on: DASTPrimitiveFailed 
-		do: [ 
-			" Remove pragma node from method body to prevent infinit loop 
+	(aRBMessageNode isCascaded and: [ 
+		 aRBMessageNode parent messages last ~= aRBMessageNode ]) ifTrue: [ 
+		self stackPush: receiver ].
+	(method isPrimitive and: [ 
+		 method isMessageValue not and: [ method isOnDo not ] ]) ifTrue: [ 
+		[ 
+		^ self
+			  solvePrimitive: method
+			  receiver: receiver
+			  arguments: arguments ]
+			on: DASTPrimitiveFailed
+			do: [ :failure | " Remove pragma node from method body to prevent infinit loop 
 			  and continue with the excecution of the method body"
-			  newContext := newContext removePrimitiveFromMethod;yourself.
-			]
-		].
+				newContext := newContext
+					              removePrimitiveFromMethod;
+					              yourself.
+				newContext stack push: failure errorCode ] ].
 	" Set new context "
 	currentContext := newContext.
-	currentContext setTemporalVariablesNamed: method argumentNames values: arguments.
-	
+	currentContext
+		setTemporalVariablesNamed: method argumentNames
+		values: arguments
 ]
 
 { #category : #visiting }
@@ -458,6 +470,15 @@ DASTInterpreter >> visitMethodNode: aRBBlockNode [
 	
 	
 	
+]
+
+{ #category : #visiting }
+DASTInterpreter >> visitPragmaNode: aRBPragmaNode [
+
+	aRBPragmaNode isPrimitiveError ifFalse: [ ^ self ].
+	self currentContext
+		at: aRBPragmaNode primitiveErrorVariableName
+		put: self stackTop
 ]
 
 { #category : #visiting }

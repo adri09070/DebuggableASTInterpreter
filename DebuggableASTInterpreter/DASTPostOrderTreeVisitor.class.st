@@ -134,10 +134,16 @@ DASTPostOrderTreeVisitor >> visitMessageNode: aRBMessageNode [
 ]
 
 { #category : #visiting }
-DASTPostOrderTreeVisitor >> visitMethodNode: aRBMethodNode [ 
-	
-	stack push: aRBMethodNode.
+DASTPostOrderTreeVisitor >> visitMethodNode: aRBMethodNode [
+
 	aRBMethodNode body acceptVisitor: self.
+	aRBMethodNode pragmas do: [ :each | each acceptVisitor: self ]
+]
+
+{ #category : #visiting }
+DASTPostOrderTreeVisitor >> visitPragmaNode: aRBPragmaNode [
+
+	stack push: aRBPragmaNode
 ]
 
 { #category : #visiting }
