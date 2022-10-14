@@ -151,11 +151,6 @@ DASTContext >> contextTag [
 ]
 
 { #category : #accessing }
-DASTContext >> currentNode [
-	^ currentNode ifNil: [ currentNode := self nodes pop ]
-]
-
-{ #category : #accessing }
 DASTContext >> currentNode: anObject [
 	currentNode := anObject
 ]
@@ -519,11 +514,6 @@ DASTContext >> lookupSelector: aByteString startInClass: aClass [
 					self error: 'The class ',lclass asString,' does not understand the message: ', aByteString asString ].
 	
 
-]
-
-{ #category : #accessing }
-DASTContext >> messageNode [
-	^ messageNode
 ]
 
 { #category : #accessing }

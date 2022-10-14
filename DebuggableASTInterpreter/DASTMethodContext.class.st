@@ -40,22 +40,24 @@ DASTMethodContext >> icon [
 { #category : #initialization }
 DASTMethodContext >> initializeContext [
 
-	| theMethod theClassMethodDic aClass aSelector result 
-	  compiledMethod ast visitor flatNodes | 
-	
-	self	parent: sender.
+	| theMethod theClassMethodDic aClass aSelector result compiledMethod ast visitor flatNodes |
+	self parent: sender.
 	aSelector := messageNode selector.
-	
+
 	aClass := self getClassForLookup.
 	compiledMethod := self lookupSelector: aSelector startInClass: aClass.
-	ast := DASTMethod new initializeWith: compiledMethod ast evaluator: self evaluator. 
+
+	ast := DASTMethod new
+		       initializeWith: compiledMethod ast
+		       evaluator: self evaluator.
 	visitor := DASTPostOrderTreeVisitor new.
-	ast body acceptVisitor: visitor.
+	ast nodeAST acceptVisitor: visitor.
 	flatNodes := visitor stack.
-	
-	self 	methodOrBlock: ast;
-			nodes: flatNodes
-	
+
+	self
+		methodOrBlock: ast;
+		nodes: flatNodes
+
 	"the next comment contains the optimization for saving the methods already looked up. 
 	It is commented because it produces a loop forever when we interpret the interpreter interpreting a primitive, such as 1+2"
 	"
@@ -75,7 +77,6 @@ DASTMethodContext >> initializeContext [
 	self 	methodOrBlock: theMethod;
 			nodes: nodes.
 	"
-	
 ]
 
 { #category : #initialization }
@@ -86,6 +87,12 @@ DASTMethodContext >> isBlockContext [
 { #category : #testing }
 DASTMethodContext >> isEPDASTBlockMirror [
 	^ false
+]
+
+{ #category : #testing }
+DASTMethodContext >> isNoMethod [
+
+	^ self receiver isNil
 ]
 
 { #category : #initialization }
