@@ -95,6 +95,12 @@ DASTContext >> allTemps [
 	self subclassResponsibility 
 ]
 
+{ #category : #converting }
+DASTContext >> asContext [
+
+	self subclassResponsibility
+]
+
 { #category : #'API-lookup' }
 DASTContext >> assignVariable: name value: value [
 	"Temporary variables assignment"

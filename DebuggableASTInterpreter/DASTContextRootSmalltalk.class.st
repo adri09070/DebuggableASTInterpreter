@@ -18,6 +18,12 @@ DASTContextRootSmalltalk >> allTemps [
 	^ #()
 ]
 
+{ #category : #converting }
+DASTContextRootSmalltalk >> asContext [
+
+	^ nil
+]
+
 { #category : #accessing }
 DASTContextRootSmalltalk >> assignVariable: name value: value [
 	(self findVariable: name)

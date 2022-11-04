@@ -2,15 +2,70 @@ Class {
 	#name : #DASTContextTests,
 	#superclass : #TestCase,
 	#instVars : [
-		'context'
+		'context',
+		'aCompiledMethod',
+		'aReceiver',
+		'aSender',
+		'anArgument',
+		'aMethodContext',
+		'pharoContext',
+		'interpreterRoot',
+		'rootContext',
+		'interpreterMethod',
+		'methodContext',
+		'interpreterBlock',
+		'blockContext'
 	],
 	#category : #'DebuggableASTInterpreter-Tests'
 }
+
+{ #category : #helpers }
+DASTContextTests >> helperAddingPoints [
+
+	^ (2@2) + (3 @ 3)
+]
+
+{ #category : #helpers }
+DASTContextTests >> helperCallingHelperAddingPoints [
+
+	^ self helperAddingPoints
+]
+
+{ #category : #running }
+DASTContextTests >> setUp [
+
+	super setUp.
+
+	"Put here a common initialization logic for tests"
+	interpreterRoot := DASTInterpreter new.
+	interpreterRoot initializeWithProgram: (RBParser parseExpression: '1').
+	rootContext := interpreterRoot currentContext rootContext.
+
+	interpreterMethod := DASTInterpreter new.
+	interpreterMethod initializeWithProgram:
+		(RBParser parseExpression: '1').
+	methodContext := interpreterMethod currentContext.
+
+	interpreterBlock := DASTInterpreter new.
+	interpreterBlock initializeWithProgram: (RBParser parseExpression: '1').
+	blockContext := interpreterBlock currentContext
+]
 
 { #category : #tests }
 DASTContextTests >> testContextInitialization [
 	context := DASTContext new.
 	self assert: context executedNodes isEmpty
+]
+
+{ #category : #tests }
+DASTContextTests >> testDASTRootContextAsContext [
+
+	| bcContext |
+	self assert: rootContext sender isNil.
+
+	bcContext := rootContext asContext.
+
+	self assert: bcContext isNil
 ]
 
 { #category : #stack }
