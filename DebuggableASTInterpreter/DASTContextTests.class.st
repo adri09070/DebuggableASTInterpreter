@@ -73,6 +73,27 @@ DASTContextTests >> testContextInitialization [
 ]
 
 { #category : #tests }
+DASTContextTests >> testDASTBlockContextAsContextHasSameResult [
+
+	| bcContext process result |
+	interpreterBlock
+		stepOver;
+		stepOver;
+		stepOver.
+	bcContext := blockContext asContext.
+	process := Process
+		           forContext: bcContext
+		           priority: Processor userInterruptPriority.
+
+	result := interpreterBlock evaluate.
+
+	process completeTo: bcContext sender.
+	self assert: process suspendedContext top equals: result.
+
+	self shouldnt: [ process resume ] raise: [ Exception ]
+]
+
+{ #category : #tests }
 DASTContextTests >> testDASTBlockContextAsContextKeepsSameEquivalentPc [
 
 	| bcContext nextNode nodes |
