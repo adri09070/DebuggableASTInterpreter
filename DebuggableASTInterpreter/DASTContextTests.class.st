@@ -42,6 +42,10 @@ DASTContextTests >> setUp [
 		stepOver;
 		stepOver;
 		stepOver;
+		stepInto;
+		stepOver;
+		stepOver;
+		stepOver;
 		stepInto.
 	"stop at the beginning of helperMethodAddingPoints context"
 	methodContext := interpreterMethod currentContext.
@@ -56,6 +60,26 @@ DASTContextTests >> setUp [
 DASTContextTests >> testContextInitialization [
 	context := DASTContext new.
 	self assert: context executedNodes isEmpty
+]
+
+{ #category : #tests }
+DASTContextTests >> testDASTMethodContextAsContextHasSameResult [
+
+	| bcContext process result |
+	interpreterMethod
+		stepOver;
+		stepOver.
+	bcContext := methodContext asContext.
+	process := Process
+		           forContext: bcContext
+		           priority: Processor userInterruptPriority.
+
+	result := interpreterMethod evaluate.
+
+	process completeTo: bcContext sender.
+	self assert: process suspendedContext top equals: result.
+
+	self shouldnt: [ process resume ] raise: [ Exception ]
 ]
 
 { #category : #tests }

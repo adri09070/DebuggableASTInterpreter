@@ -112,11 +112,16 @@ DASTContext >> asContext [
 		              arguments: self arguments.
 	nextNodes := self nodes copy.
 
-	"We need to change pc and to think about that later ..."
+	"We need to change pc"
 	[ nextPC ] whileNil: [ 
 		nextNode := nextNodes pop.
 		nextPC := self methodOrBlock nodeAST firstPcForNode: nextNode ].
 	newContext pc: nextPC.
+
+	"We need to rebuild the stack"
+	newContext stackp: 0.
+	(self allTemps collect: [ :each | each value ]) , self stack do: [ 
+		:each | newContext push: each ].
 	^ newContext
 ]
 
