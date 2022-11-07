@@ -19,18 +19,6 @@ Class {
 	#category : #'DebuggableASTInterpreter-Tests'
 }
 
-{ #category : #helpers }
-DASTContextTests >> helperAddingPoints [
-
-	^ (2@2) + (3 @ 3)
-]
-
-{ #category : #helpers }
-DASTContextTests >> helperCallingHelperAddingPoints [
-
-	^ self helperAddingPoints
-]
-
 { #category : #running }
 DASTContextTests >> setUp [
 
@@ -38,16 +26,29 @@ DASTContextTests >> setUp [
 
 	"Put here a common initialization logic for tests"
 	interpreterRoot := DASTInterpreter new.
-	interpreterRoot initializeWithProgram: (RBParser parseExpression: '1').
+	interpreterRoot initializeWithProgram:
+		(RBParser parseExpression: '1').
 	rootContext := interpreterRoot currentContext rootContext.
 
 	interpreterMethod := DASTInterpreter new.
-	interpreterMethod initializeWithProgram:
-		(RBParser parseExpression: '1').
+	interpreterMethod initializeWithProgram: (RBParser parseExpression:
+			 'DASTInterpreterClassForTests new helperCallingHelperAddingPoints: 2@2 with: 3@3 ').
+	interpreterMethod
+		stepOver;
+		stepOver;
+		stepOver;
+		stepOver;
+		stepInto;
+		stepOver;
+		stepOver;
+		stepOver;
+		stepInto.
+	"stop at the beginning of helperMethodAddingPoints context"
 	methodContext := interpreterMethod currentContext.
 
 	interpreterBlock := DASTInterpreter new.
-	interpreterBlock initializeWithProgram: (RBParser parseExpression: '1').
+	interpreterBlock initializeWithProgram:
+		(RBParser parseExpression: '1').
 	blockContext := interpreterBlock currentContext
 ]
 
@@ -55,6 +56,48 @@ DASTContextTests >> setUp [
 DASTContextTests >> testContextInitialization [
 	context := DASTContext new.
 	self assert: context executedNodes isEmpty
+]
+
+{ #category : #tests }
+DASTContextTests >> testDASTMethodContextAsContextKeepsSameReceiverSenderAndArguments [
+
+	| arguments receiver bcContext |
+	bcContext := methodContext asContext.
+
+	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
+	[ bcContext ] whileNotNil: [ 
+		receiver := methodContext receiver.
+		arguments := methodContext arguments.
+
+		self
+			assert: bcContext receiver identicalTo: receiver;
+			assertCollection: bcContext arguments hasSameElements: arguments.
+
+		bcContext := bcContext sender.
+		methodContext := methodContext sender ]
+]
+
+{ #category : #tests }
+DASTContextTests >> testDASTMethodContextAsContextKeepsSameStack [
+
+	| bcContext stack |
+	interpreterMethod
+		stepOver;
+		stepOver.
+	bcContext := methodContext asContext.
+
+	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
+	[ bcContext ] whileNotNil: [ 
+		stack := methodContext stack.
+
+		self
+			assert: bcContext stackPtr
+			equals: stack size + methodContext allTemps size.
+		1 to: stack size do: [ :each | 
+		self assert: stack pop identicalTo: bcContext pop ].
+
+		bcContext := bcContext sender.
+		methodContext := methodContext sender ]
 ]
 
 { #category : #tests }

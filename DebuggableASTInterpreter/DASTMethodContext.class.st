@@ -19,6 +19,12 @@ DASTMethodContext >> allTemps [
 	^ self variablesDict associations
 ]
 
+{ #category : #accessing }
+DASTMethodContext >> arguments [
+
+	^ (self method ast arguments collect: [ :each | each name ]) collect: [ :each | (self findLocalVariable: each) value ]
+]
+
 { #category : #'API-lookup' }
 DASTMethodContext >> findLocalVariable: aName [
 	^ variablesDict 

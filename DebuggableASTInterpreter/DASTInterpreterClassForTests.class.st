@@ -81,6 +81,18 @@ DASTInterpreterClassForTests >> getVariableDeclaredInMethod [
 	^ a
 ]
 
+{ #category : #helpers }
+DASTInterpreterClassForTests >> helperAddingPoints: point1 with: point2 [
+
+	^ point1 + point2
+]
+
+{ #category : #helpers }
+DASTInterpreterClassForTests >> helperCallingHelperAddingPoints: point1 with: point2 [
+
+	^ self helperAddingPoints: point1 with: point2
+]
+
 { #category : #tests }
 DASTInterpreterClassForTests >> initialize [ 
 	|x|

@@ -95,10 +95,25 @@ DASTContext >> allTemps [
 	self subclassResponsibility 
 ]
 
+{ #category : #accessing }
+DASTContext >> arguments [
+
+	^ {  } asOrderedCollection
+]
+
 { #category : #converting }
 DASTContext >> asContext [
 
-	self subclassResponsibility
+	| newContext |
+	newContext := Context
+		              sender: self sender asContext
+		              receiver: self receiver
+		              method: self method
+		              arguments: self arguments.
+
+	"We need to change pc and to think about that later ..."
+	"self pc: ."
+	^ newContext
 ]
 
 { #category : #'API-lookup' }
