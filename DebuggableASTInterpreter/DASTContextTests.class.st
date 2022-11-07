@@ -59,6 +59,31 @@ DASTContextTests >> testContextInitialization [
 ]
 
 { #category : #tests }
+DASTContextTests >> testDASTMethodContextAsContextKeepsSameEquivalentPc [
+
+	| bcContext nextNode nodes |
+	interpreterMethod
+		stepOver;
+		stepOver.
+	bcContext := methodContext asContext.
+
+	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
+	[ bcContext ] whileNotNil: [ 
+		nodes := methodContext nodes copy.
+		nextNode := nodes pop.
+		[ methodContext methodOrBlock nodeAST firstPcForNode: nextNode ] 
+			whileNil: [ nextNode := nodes pop ].
+
+		self
+			assert: bcContext pc
+			equals:
+			(methodContext methodOrBlock nodeAST firstPcForNode: nextNode).
+
+		bcContext := bcContext sender.
+		methodContext := methodContext sender ]
+]
+
+{ #category : #tests }
 DASTContextTests >> testDASTMethodContextAsContextKeepsSameReceiverSenderAndArguments [
 
 	| arguments receiver bcContext |
@@ -74,7 +99,9 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameReceiverSenderAndArgu
 			assertCollection: bcContext arguments hasSameElements: arguments.
 
 		bcContext := bcContext sender.
-		methodContext := methodContext sender ]
+		methodContext := methodContext sender ].
+
+	self assert: methodContext isRoot
 ]
 
 { #category : #tests }

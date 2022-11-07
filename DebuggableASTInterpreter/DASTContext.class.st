@@ -104,15 +104,19 @@ DASTContext >> arguments [
 { #category : #converting }
 DASTContext >> asContext [
 
-	| newContext |
+	| newContext nextNode nextPC nextNodes |
 	newContext := Context
 		              sender: self sender asContext
 		              receiver: self receiver
 		              method: self method
 		              arguments: self arguments.
+	nextNodes := self nodes copy.
 
 	"We need to change pc and to think about that later ..."
-	"self pc: ."
+	[ nextPC ] whileNil: [ 
+		nextNode := nextNodes pop.
+		nextPC := self methodOrBlock nodeAST firstPcForNode: nextNode ].
+	newContext pc: nextPC.
 	^ newContext
 ]
 
