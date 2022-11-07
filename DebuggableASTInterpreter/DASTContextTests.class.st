@@ -73,6 +73,32 @@ DASTContextTests >> testContextInitialization [
 ]
 
 { #category : #tests }
+DASTContextTests >> testDASTBlockContextAsContextKeepsSameEquivalentPc [
+
+	| bcContext nextNode nodes |
+	interpreterBlock
+		stepOver;
+		stepOver;
+		stepOver.
+	bcContext := blockContext asContext.
+
+	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
+	[ bcContext ] whileNotNil: [ 
+		nodes := blockContext nodes copy.
+		nextNode := nodes pop.
+		[ blockContext methodOrBlock nodeAST firstPcForNode: nextNode ] 
+			whileNil: [ nextNode := nodes pop ].
+
+		self
+			assert: bcContext pc
+			equals:
+			(blockContext methodOrBlock nodeAST firstPcForNode: nextNode).
+
+		bcContext := bcContext sender.
+		blockContext := blockContext sender ]
+]
+
+{ #category : #tests }
 DASTContextTests >> testDASTBlockContextAsContextKeepsSameReceiverSenderAndArguments [
 
 	| arguments receiver bcContext bcMethod dastMethod |
@@ -94,6 +120,30 @@ DASTContextTests >> testDASTBlockContextAsContextKeepsSameReceiverSenderAndArgum
 		blockContext := blockContext sender ].
 
 	self assert: blockContext isRoot
+]
+
+{ #category : #tests }
+DASTContextTests >> testDASTBlockContextAsContextKeepsSameStack [
+
+	| bcContext stack |
+	interpreterBlock
+		stepOver;
+		stepOver;
+		stepOver.
+	bcContext := blockContext asContext.
+
+	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
+	[ bcContext ] whileNotNil: [ 
+		stack := blockContext stack.
+
+		self
+			assert: bcContext stackPtr
+			equals: stack size + blockContext variablesDict size.
+		1 to: stack size do: [ :each | 
+		self assert: stack pop identicalTo: bcContext pop ].
+
+		bcContext := bcContext sender.
+		blockContext := blockContext sender ]
 ]
 
 { #category : #tests }

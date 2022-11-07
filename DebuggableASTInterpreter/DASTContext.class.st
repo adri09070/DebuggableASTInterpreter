@@ -106,12 +106,7 @@ DASTContext >> arguments [
 DASTContext >> asContext [
 
 	| newContext nextNode nextPC nextNodes |
-	newContext := (Context newForMethod: self method)
-		              setSender: self sender asContext
-		              receiver: self receiver
-		              method: self methodOrBlock compiledCode
-		              closure: self methodOrBlock closure
-		              startpc: self methodOrBlock compiledCode initialPC.
+	newContext := self privAsContext.
 	nextNodes := self nodes copy.
 
 	"We need to change pc"
@@ -121,9 +116,7 @@ DASTContext >> asContext [
 	newContext pc: nextPC.
 
 	"We need to rebuild the stack"
-	newContext stackp: 0.
-	(self allTemps collect: [ :each | each value ]) , self stack do: [ 
-		:each | newContext push: each ].
+	self privCopyStackInContext: newContext.
 	^ newContext
 ]
 
@@ -628,6 +621,25 @@ DASTContext >> printOn: aStream [
 	aStream
 		nextPutAll: 'DAST Context standard'
 		
+]
+
+{ #category : #converting }
+DASTContext >> privAsContext [
+
+	^ (Context newForMethod: self method)
+		  setSender: self sender asContext
+		  receiver: self receiver
+		  method: self methodOrBlock compiledCode
+		  closure: self methodOrBlock closure
+		  startpc: self methodOrBlock compiledCode initialPC
+]
+
+{ #category : #converting }
+DASTContext >> privCopyStackInContext: newContext [
+
+	newContext stackp: 0.
+	(self variablesDict associations collect: [ :each | each value ])
+	, self stack do: [ :each | newContext push: each ]
 ]
 
 { #category : #accessing }

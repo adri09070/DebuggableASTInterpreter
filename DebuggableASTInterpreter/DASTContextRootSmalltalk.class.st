@@ -75,6 +75,14 @@ DASTContextRootSmalltalk >> methodClass [
 	^ nil
 ]
 
+{ #category : #converting }
+DASTContextRootSmalltalk >> privCopyStackInContext: newContext [
+
+	"nothing to copy when self isRoot"
+
+	
+]
+
 { #category : #'gt-extension' }
 DASTContextRootSmalltalk >> sourceCode [
 	^ ''
