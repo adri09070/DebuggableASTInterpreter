@@ -34,6 +34,18 @@ DASTClosure >> body [
 	^ nodeAST body
 ]
 
+{ #category : #accessing }
+DASTClosure >> closure [
+
+	^ nil
+]
+
+{ #category : #accessing }
+DASTClosure >> compiledCode [
+
+	self subclassResponsibility
+]
+
 { #category : #initialization }
 DASTClosure >> initializeWith: aRBNode [
 

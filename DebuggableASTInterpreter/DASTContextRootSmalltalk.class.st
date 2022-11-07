@@ -18,6 +18,12 @@ DASTContextRootSmalltalk >> allTemps [
 	^ #()
 ]
 
+{ #category : #accessing }
+DASTContextRootSmalltalk >> arguments [
+
+	^ {  } asOrderedCollection
+]
+
 { #category : #converting }
 DASTContextRootSmalltalk >> asContext [
 

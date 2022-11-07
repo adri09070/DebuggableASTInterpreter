@@ -30,6 +30,18 @@ DASTBlock >> bodyOffset [
 ]
 
 { #category : #accessing }
+DASTBlock >> closure [
+
+	^ self nodeAST evaluate
+]
+
+{ #category : #accessing }
+DASTBlock >> compiledCode [
+
+	^ self closure compiledBlock
+]
+
+{ #category : #accessing }
 DASTBlock >> ensure: aBlock [
 	"Evaluate a termination block after evaluating the receiver, regardless of
 	 whether the receiver's evaluation completes.  N.B.  This method is *not*

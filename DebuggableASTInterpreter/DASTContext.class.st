@@ -98,18 +98,20 @@ DASTContext >> allTemps [
 { #category : #accessing }
 DASTContext >> arguments [
 
-	^ {  } asOrderedCollection
+	^ (self methodOrBlock nodeAST arguments collect: [ :each | each name ]) 
+		  collect: [ :each | (self findLocalVariable: each) value ]
 ]
 
 { #category : #converting }
 DASTContext >> asContext [
 
 	| newContext nextNode nextPC nextNodes |
-	newContext := Context
-		              sender: self sender asContext
+	newContext := (Context newForMethod: self method)
+		              setSender: self sender asContext
 		              receiver: self receiver
-		              method: self method
-		              arguments: self arguments.
+		              method: self methodOrBlock compiledCode
+		              closure: self methodOrBlock closure
+		              startpc: self methodOrBlock compiledCode initialPC.
 	nextNodes := self nodes copy.
 
 	"We need to change pc"

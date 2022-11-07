@@ -51,8 +51,18 @@ DASTContextTests >> setUp [
 	methodContext := interpreterMethod currentContext.
 
 	interpreterBlock := DASTInterpreter new.
-	interpreterBlock initializeWithProgram:
-		(RBParser parseExpression: '1').
+	interpreterBlock initializeWithProgram: (RBParser parseExpression:
+			 '[ :each | [:point | point + (5 @ 8) ] value: each @ each ] value: 4').
+	"stop at the beginning of the embedded block context"
+	interpreterBlock
+		stepOver;
+		stepOver;
+		stepInto;
+		stepOver;
+		stepOver;
+		stepOver;
+		stepOver;
+		stepInto.
 	blockContext := interpreterBlock currentContext
 ]
 
@@ -60,6 +70,30 @@ DASTContextTests >> setUp [
 DASTContextTests >> testContextInitialization [
 	context := DASTContext new.
 	self assert: context executedNodes isEmpty
+]
+
+{ #category : #tests }
+DASTContextTests >> testDASTBlockContextAsContextKeepsSameReceiverSenderAndArguments [
+
+	| arguments receiver bcContext bcMethod dastMethod |
+	bcContext := blockContext asContext.
+
+	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
+	[ bcContext ] whileNotNil: [ 
+		receiver := blockContext receiver.
+		arguments := blockContext arguments.
+		bcMethod := bcContext method.
+		dastMethod := blockContext methodOrBlock compiledCode.
+		self
+			assert: bcContext receiver identicalTo: receiver;
+			assertCollection: bcContext arguments hasSameElements: arguments;
+			assert: bcContext method sourceCode
+			equals: blockContext methodOrBlock compiledCode sourceCode.
+
+		bcContext := bcContext sender.
+		blockContext := blockContext sender ].
+
+	self assert: blockContext isRoot
 ]
 
 { #category : #tests }
@@ -120,7 +154,9 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameReceiverSenderAndArgu
 
 		self
 			assert: bcContext receiver identicalTo: receiver;
-			assertCollection: bcContext arguments hasSameElements: arguments.
+			assertCollection: bcContext arguments hasSameElements: arguments;
+			assert: bcContext method
+			identicalTo: methodContext methodOrBlock compiledCode.
 
 		bcContext := bcContext sender.
 		methodContext := methodContext sender ].
