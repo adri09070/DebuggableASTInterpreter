@@ -104,7 +104,7 @@ DASTContextTests >> testDASTBlockContextAsContextKeepsSameEquivalentPc [
 	bcContext := blockContext asContext.
 
 	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
-	[ bcContext ] whileNotNil: [ 
+	[ blockContext isRoot ] whileFalse: [ 
 		nodes := blockContext nodes copy.
 		nextNode := nodes pop.
 		[ blockContext methodOrBlock nodeAST firstPcForNode: nextNode ] 
@@ -126,7 +126,7 @@ DASTContextTests >> testDASTBlockContextAsContextKeepsSameReceiverSenderAndArgum
 	bcContext := blockContext asContext.
 
 	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
-	[ bcContext ] whileNotNil: [ 
+	[ blockContext isRoot ] whileFalse: [ 
 		receiver := blockContext receiver.
 		arguments := blockContext arguments.
 		bcMethod := bcContext method.
@@ -197,7 +197,7 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameEquivalentPc [
 	bcContext := methodContext asContext.
 
 	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
-	[ bcContext ] whileNotNil: [ 
+	[ methodContext isRoot ] whileFalse: [ 
 		nodes := methodContext nodes copy.
 		nextNode := nodes pop.
 		[ methodContext methodOrBlock nodeAST firstPcForNode: nextNode ] 
@@ -219,7 +219,7 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameReceiverSenderAndArgu
 	bcContext := methodContext asContext.
 
 	"We check that bcContext and its senders have the same receiver and arguments the DASTContext and its senders"
-	[ bcContext ] whileNotNil: [ 
+	[ methodContext isRoot ] whileFalse: [ 
 		receiver := methodContext receiver.
 		arguments := methodContext arguments.
 
@@ -261,12 +261,17 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameStack [
 { #category : #tests }
 DASTContextTests >> testDASTRootContextAsContext [
 
-	| bcContext |
+	| bcContext process |
 	self assert: rootContext sender isNil.
 
 	bcContext := rootContext asContext.
 
-	self assert: bcContext isNil
+	process := Process
+		           forContext: bcContext
+		           priority: Processor userInterruptPriority.
+	self shouldnt: [ process resume ] raise: [ Exception ].
+	
+	self assert: process isTerminated
 ]
 
 { #category : #stack }

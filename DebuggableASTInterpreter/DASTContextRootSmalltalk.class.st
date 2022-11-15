@@ -27,7 +27,7 @@ DASTContextRootSmalltalk >> arguments [
 { #category : #converting }
 DASTContextRootSmalltalk >> asContext [
 
-	^ nil
+	^ [ Processor terminateRealActive] asContext
 ]
 
 { #category : #accessing }
