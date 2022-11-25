@@ -269,7 +269,7 @@ DASTContextTests >> testDASTRootContextAsContext [
 	process := Process
 		           forContext: bcContext
 		           priority: Processor userInterruptPriority.
-	self shouldnt: [ process resume ] raise: [ Exception ].
+	self shouldnt: [ process resume ] raise: [ BlockCannotReturn ].
 	
 	self assert: process isTerminated
 ]

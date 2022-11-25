@@ -14,6 +14,16 @@ Class {
 	#category : #'DebuggableASTInterpreter-Core'
 }
 
+{ #category : #'as yet unclassified' }
+DASTInterpreter class >> startFromContext: aContext [
+
+	| interpreter |
+	interpreter := self new.
+
+	^ interpreter initializeWithContext:
+		  (aContext asDASTContextInterpretedBy: interpreter)
+]
+
 { #category : #accessing }
 DASTInterpreter >> astCache: aCollection [ 
 	astCache := aCollection
@@ -113,29 +123,8 @@ DASTInterpreter >> increasePC [
 DASTInterpreter >> initializeWithContext: aDASTContext [
 	"initialize the interpreter to resume the execution from the context got as argument"
 
-	| visitor nodes rootContext  aRBNode aCollection|
-self halt.
-	astCache := IdentityDictionary new. 
 	programCounter := 0.
-	visitor := DASTPostOrderTreeVisitor new.
-	
-	(aRBNode methodNode body addReturn; yourself) acceptVisitor: visitor.
-	nodes := visitor stack.
-	rootContext := DASTContextRootSmalltalk new 
-		evaluator: self evaluator;
-		yourself.
-	"ugly method necessary because we are putting the root expression of the AST inside a return and sending it the message value"
-	self flag: 'update next call'.
-	" Set the first method (noMethod) context evaluation. The receiver is nil "
-	currentContext := DASTMethodContext new
-		receiver: self evaluator nilObject;
-		parent: rootContext;
-		methodOrBlock: (DASTMethod new initializeWith: nodes last methodNode evaluator: self evaluator);
-		nodes: nodes;
-		sender: rootContext;
-		temps: aCollection;
-		evaluator: self evaluator;
-		yourself.
+	self currentContext: aDASTContext
 	
 ]
 

@@ -110,6 +110,7 @@ DASTContext >> asContext [
 	nextNodes := self nodes copy.
 
 	"We need to change pc"
+	nextPC := nil.
 	[ nextPC ] whileNil: [ 
 		nextNode := nextNodes pop.
 		nextPC := self methodOrBlock nodeAST firstPcForNode: nextNode ].
