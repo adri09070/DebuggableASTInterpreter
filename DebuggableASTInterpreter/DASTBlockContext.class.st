@@ -20,6 +20,12 @@ DASTBlockContext >> allTemps [
 	  sender allTemps 
 ]
 
+{ #category : #testing }
+DASTBlockContext >> belongsToDoIt [
+	self flag: 'wrong imoplementation, to fix'.
+	^false
+]
+
 { #category : #initialization }
 DASTBlockContext >> contextTag [
 	^ closure outerContext

@@ -613,14 +613,14 @@ DASTContext >> parent: aDASTContext [
 
 { #category : #accessing }
 DASTContext >> printOn: aStream [
-	"aStream
+	aStream
 		cr;
 		nextPutAll: (receiver ifNotNil: [ receiver asString ] ifNil: [ 'nil' ]);
 		nextPutAll: ' <- ';
-		nextPutAll: (closure ifNotNil: [ closure selector asString ] ifNil: ['nil'])."
-		
+		nextPutAll: (closure ifNotNil: [ closure selector asString ] ifNil: ['nil']).
+	"	
 	aStream
-		nextPutAll: 'DAST Context standard'
+		nextPutAll: 'DAST Context standard'"
 		
 ]
 
