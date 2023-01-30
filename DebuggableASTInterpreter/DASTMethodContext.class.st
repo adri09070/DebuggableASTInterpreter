@@ -25,6 +25,11 @@ DASTMethodContext >> arguments [
 	^ (self method ast arguments collect: [ :each | each name ]) collect: [ :each | (self findLocalVariable: each) value ]
 ]
 
+{ #category : #testing }
+DASTMethodContext >> belongsToDoIt [
+	^false
+]
+
 { #category : #'API-lookup' }
 DASTMethodContext >> findLocalVariable: aName [
 	^ variablesDict 

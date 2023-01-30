@@ -18,6 +18,13 @@ DASTContextSwitchTests >> setUp [
 	"Put here a common initialization logic for tests"
 ]
 
+{ #category : #running }
+DASTContextSwitchTests >> tearDown [
+	context terminate.
+	super tearDown.
+	
+]
+
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitch [
 	| dastContext |
@@ -25,9 +32,8 @@ DASTContextSwitchTests >> testInterpreterSwitch [
 	self assert: ((context lookupTempVar: #a) readInContext: context) equals: 40.
 	self assert: ((context lookupTempVar: #b) readInContext: context) equals: 2.
 	
-	self halt.
 	dastContext := context asDASTContextInterpretedBy: DASTInterpreter new.
-	self halt
+"	self assert: (dastContext findLocalVariable: #a) value equals: 40"
 	
 	
 ]
