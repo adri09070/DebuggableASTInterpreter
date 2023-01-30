@@ -27,13 +27,18 @@ DASTContextSwitchTests >> tearDown [
 
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitch [
+
 	| dastContext |
 	4 timesRepeat: [ context := context step ].
-	self assert: ((context lookupTempVar: #a) readInContext: context) equals: 40.
-	self assert: ((context lookupTempVar: #b) readInContext: context) equals: 2.
-	
-	dastContext := context asDASTContextInterpretedBy: DASTInterpreter new.
-"	self assert: (dastContext findLocalVariable: #a) value equals: 40"
-	
-	
+	self
+		assert: ((context lookupTempVar: #a) readInContext: context)
+		equals: 40.
+	self
+		assert: ((context lookupTempVar: #b) readInContext: context)
+		equals: 2.
+
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+	self assert: (dastContext findLocalVariable: #a) value equals: 40.
+	self assert: (dastContext findLocalVariable: #b) value equals: 2
 ]

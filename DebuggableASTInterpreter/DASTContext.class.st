@@ -31,25 +31,27 @@ Class {
 { #category : #instantiation }
 DASTContext class >> newNoMethodContextWithProgram: aRBNode temps: aCollection evaluator: anEvaluator [
 	"special context for the first call"
+
 	| nodes rootContext noMethod |
-	
 	nodes := DASTPostOrderTreeVisitor new flattenedNodesFrom: aRBNode.
-	
-	rootContext := DASTContextRootSmalltalk new 
-		evaluator: anEvaluator;
-		yourself.
-	
-	noMethod := (DASTMethod new initializeWith: nodes last methodNode evaluator: anEvaluator).
+
+	rootContext := DASTContextRootSmalltalk new
+		               evaluator: anEvaluator;
+		               yourself.
+
+	noMethod := DASTNoMethod new
+		            initializeWith: nodes last methodNode
+		            evaluator: anEvaluator.
 	" Set the first method (noMethod) context evaluation. The receiver is nil "
 	^ DASTMethodContext new
-		receiver: anEvaluator nilObject;
-		parent: rootContext;
-		methodOrBlock: noMethod;
-		nodes: nodes;
-		sender: rootContext;
-		temps: aCollection;
-		evaluator: anEvaluator;
-		yourself.
+		  receiver: anEvaluator nilObject;
+		  parent: rootContext;
+		  methodOrBlock: noMethod;
+		  nodes: nodes;
+		  sender: rootContext;
+		  temps: aCollection;
+		  evaluator: anEvaluator;
+		  yourself
 ]
 
 { #category : #instantiation }

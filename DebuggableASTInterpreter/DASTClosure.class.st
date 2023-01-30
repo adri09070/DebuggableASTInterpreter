@@ -88,9 +88,7 @@ DASTClosure >> nodeAST: aRBNode [
 
 	sourceCode := aRBNode sourceCode.
 	nodeAST := aRBNode.
-	numArgs := nodeAST arguments size.
-
-	nodeAST doSemanticAnalysis
+	numArgs := nodeAST arguments size
 ]
 
 { #category : #accessing }

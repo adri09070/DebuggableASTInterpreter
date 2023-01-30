@@ -87,7 +87,7 @@ DASTMethod >> isNamedPrimitive [
 
 { #category : #testing }
 DASTMethod >> isNoMethod [
-	^ self selector = #noMethod 
+	^ self selector = #DoIt 
 ]
 
 { #category : #accessing }
