@@ -26,6 +26,20 @@ DASTContextSwitchTests >> tearDown [
 ]
 
 { #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchCurrentNodeIsLastExecutedNode [
+
+	| dastContext node |
+	4 timesRepeat: [ context := context step ].
+
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	node := dastContext executedNodes last.
+
+	self assert: dastContext currentNode identicalTo: node
+]
+
+{ #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsBindings [
 
 	| dastContext |
@@ -84,6 +98,22 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
 		self assert: context receiver identicalTo: dastContext receiver.
 		context := context sender.
 		dastContext := dastContext sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchMessageNodeIsLastSourceNodeExecutedFromSender [
+
+	| dastContext pc node |
+	4 timesRepeat: [ context := context step ].
+
+	pc := context pc.
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	self deny: dastContext sender isRoot.
+	node := context sender sourceNodeExecuted.
+
+	self assert: dastContext messageNode identicalTo: node
 ]
 
 { #category : #tests }
