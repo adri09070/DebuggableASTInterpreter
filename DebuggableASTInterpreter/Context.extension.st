@@ -3,19 +3,20 @@ Extension { #name : #Context }
 { #category : #'*DebuggableASTInterpreter' }
 Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 
-	| dastCtx bindings |
+	| dastCtx bindings aimedNode |
+	"set current node and executed node stack and next nodes stack"
 	bindings := Dictionary new.
-	self tempNames do: [ :tempName | 
+	self tempNames do: [ :tempName |
 		bindings at: tempName put: (self tempNamed: tempName) ].
-	dastCtx := [ 
+	dastCtx := [
 	           (DASTContext
 		            newWithSender:
 			            (sender asDASTContextInterpretedBy: aDASTInterpreter)
 		            receiver:
 			            (sender ifNil: [ closureOrNil ] ifNotNil: [ receiver ])
 		            messageNode: (sender
-				             ifNil: [ 
-					             closureOrNil ifNotNil: [ 
+				             ifNil: [
+					             closureOrNil ifNotNil: [
 							             RBMessageNode
 								             receiver: RBValueNode new
 								             selector: #value ] ]
@@ -25,6 +26,9 @@ Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 		           yourself ]
 		           on: Exception
 		           do: [ :exc | ^ DASTContextRootSmalltalk new ].
+	aimedNode := self compiledCode sourceNodeForPC: self pc.
+	[ aimedNode == dastCtx nodes top ] whileFalse: [
+		dastCtx executedNodes push: dastCtx nodes pop ].
 	^ dastCtx
 ]
 

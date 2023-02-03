@@ -60,3 +60,80 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsBindingsRecursively [
 		context := context sender.
 		dastContext := dastContext sender ]
 ]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiver [
+
+	| dastContext |
+	4 timesRepeat: [ context := context step ].
+
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+	self assert: context receiver identicalTo: dastContext receiver
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
+
+	| dastContext |
+	4 timesRepeat: [ context := context step ].
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	[ dastContext isRoot ] whileFalse: [
+		self assert: context receiver identicalTo: dastContext receiver.
+		context := context sender.
+		dastContext := dastContext sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchReceiverRemainsUnchanged [
+
+	| dastContext instVars oldInstVarValues newInstVarValues |
+	4 timesRepeat: [ context := context step ].
+
+	instVars := context receiver class allInstVarNames.
+	oldInstVarValues := instVars collect: [ :inst |
+		                    context receiver instVarNamed: inst ].
+
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	newInstVarValues := instVars collect: [ :inst |
+		                    dastContext receiver instVarNamed: inst ].
+
+	oldInstVarValues withIndexDo: [ :each :index |
+		self assert: each identicalTo: (newInstVarValues at: index) ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPC [
+
+	| dastContext pc node |
+	4 timesRepeat: [ context := context step ].
+
+	pc := context pc.
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+	node := context compiledCode sourceNodeForPC: context pc.
+
+	self assert: dastContext nodes top identicalTo: node
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPCRecursively [
+
+	| dastContext pcs node |
+	4 timesRepeat: [ context := context step ].
+
+	pcs := context stack collect: [ :ctx | ctx pc ].
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	[ dastContext isRoot ] whileFalse: [
+		node := context compiledCode sourceNodeForPC: context pc.
+
+		self assert: dastContext nodes top identicalTo: node.
+		context := context sender.
+		dastContext := dastContext sender ]
+]
