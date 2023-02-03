@@ -26,7 +26,7 @@ DASTContextSwitchTests >> tearDown [
 ]
 
 { #category : #tests }
-DASTContextSwitchTests >> testInterpreterSwitch [
+DASTContextSwitchTests >> testInterpreterSwitchKeepsBindings [
 
 	| dastContext |
 	4 timesRepeat: [ context := context step ].
@@ -41,4 +41,22 @@ DASTContextSwitchTests >> testInterpreterSwitch [
 		               DASTInterpreter new.
 	self assert: (dastContext findLocalVariable: #a) value equals: 40.
 	self assert: (dastContext findLocalVariable: #b) value equals: 2
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchKeepsBindingsRecursively [
+
+	| dastContext tempNames |
+	4 timesRepeat: [ context := context step ].
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	[ dastContext isRoot ] whileFalse: [
+		tempNames := context tempNames.
+		tempNames do: [ :temp |
+			self
+				assert: ((context lookupTempVar: temp) readInContext: context)
+				identicalTo: (dastContext findLocalVariable: temp) value ].
+		context := context sender.
+		dastContext := dastContext sender ]
 ]
