@@ -3,37 +3,40 @@ Extension { #name : #Context }
 { #category : #'*DebuggableASTInterpreter' }
 Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 
-	| dastCtx bindings aimedNode currentNode |
+	| dastCtx bindings aimedNode currentNode dastSender |
 	"set current node and executed node stack and next nodes stack"
 	bindings := Dictionary new.
 	self tempNames do: [ :tempName |
 		bindings at: tempName put: (self tempNamed: tempName) ].
-	dastCtx := [
-	           (DASTContext
+	dastCtx := (DASTContext
 		            newWithSender:
-			            (sender asDASTContextInterpretedBy: aDASTInterpreter)
-		            receiver:
-			            (sender
-				             ifNil: [ closureOrNil "compiledBlock" ]
-				             ifNotNil: [ receiver ])
+			            (dastSender := sender asDASTContextInterpretedBy:
+					                           aDASTInterpreter)
+		            receiver: (closureOrNil ifNil: [ receiver ] ifNotNil: [
+					             DASTBlock new
+						             nodeAST: closureOrNil compiledBlock ast;
+						             outerContext: dastSender;
+						             yourself ])
 		            messageNode: (sender
 				             ifNil: [
 					             closureOrNil ifNotNil: [
-							             RBMessageNode
-								             receiver: RBLiteralValueNode new
-								             selector: #value ] ]
+						             RBMessageNode
+							             receiver: RBLiteralValueNode new
+							             selector: #value ] ]
 				             ifNotNil: [ sender sourceNodeExecuted ])
 		            evaluator: aDASTInterpreter evaluator)
 		           temps: bindings associations;
-		           yourself ]
-		           on: Exception
-		           do: [ :exc | "UIManager inform: exc printString."
+		           "sender
+				             ifNil: [ closureOrNil ]
+				             ifNotNil: [ receiver ] ]""on: Exception
+		           do: [ :exc | ""UIManager inform: exc printString.""
 			           ^ DASTContextRootSmalltalk new
 				             currentNode:
 					             (RBMessageNode
 						              receiver: RBLiteralValueNode new
 						              selector: #value);
-				             yourself ].
+				   Missing opener for closer: ] ->           yourself ]"
+			           yourself. "["
 
 	aimedNode := self compiledCode sourceNodeForPC: self pc.
 	[ aimedNode == dastCtx nodes top ] whileFalse: [

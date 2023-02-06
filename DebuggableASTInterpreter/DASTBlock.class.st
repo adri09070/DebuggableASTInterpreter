@@ -128,7 +128,7 @@ DASTBlock >> outerContext [
 { #category : #accessing }
 DASTBlock >> outerContext: aDASTContext [
 	outerContext := aDASTContext.
-	self initializeInterval
+	"self initializeInterval"
 ]
 
 { #category : #accessing }

@@ -765,6 +765,11 @@ DASTContext >> tempAt: anIndex [
 	^ self variablesDict at: (self variablesDict keys at: anIndex)
 ]
 
+{ #category : #accessing }
+DASTContext >> temps: aCollection [ 
+	aCollection do: [ :assoc | self at: assoc key put: assoc value ]
+]
+
 { #category : #'private-exceptions' }
 DASTContext >> terminate [
 	"Make myself unresumable."

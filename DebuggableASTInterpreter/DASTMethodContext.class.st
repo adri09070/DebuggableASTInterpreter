@@ -133,8 +133,3 @@ DASTMethodContext >> removePrimitiveFromMethod [
 	
 	self methodOrBlock evaluatePrimitive: false
 ]
-
-{ #category : #accessing }
-DASTMethodContext >> temps: aCollection [ 
-	aCollection do: [ :assoc | self at: assoc key put: assoc value ]
-]

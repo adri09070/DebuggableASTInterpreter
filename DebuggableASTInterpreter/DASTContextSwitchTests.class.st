@@ -20,7 +20,7 @@ DASTContextSwitchTests >> setUp [
 
 { #category : #running }
 DASTContextSwitchTests >> tearDown [
-	context terminate.
+	"context terminate."
 	super tearDown.
 	
 ]
@@ -171,8 +171,8 @@ DASTContextSwitchTests >> testInterpreterSwitchPutsRootBeforeFirstInterestingCon
 	self deny: dastContext sender isRoot.
 	self assert: dastContext sender isBlockContext.
 	self
-		assert: dastContext sender nodeAST compiledCode
-		identicalTo: context sender compiledCode.
+		assert: dastContext sender methodOrBlock
+		equals: context sender compiledCode ast.
 
 	self assert: dastContext sender sender isRoot
 ]
