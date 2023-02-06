@@ -55,7 +55,7 @@ DASTBlockContext >> initializeContext [
 		ifFalse: [ self getClassForLookup ].
 	"
 	visitor := DASTPostOrderTreeVisitor new.
-	receiver body acceptVisitor: visitor.
+	receiver "compiledBlock ast" body acceptVisitor: visitor.
 	nodes := visitor stack.
 	currentNode := nodes top.
 	self 	methodOrBlock: receiver;

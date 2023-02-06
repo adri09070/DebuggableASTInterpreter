@@ -37,6 +37,12 @@ DASTContextRootSmalltalk >> assignVariable: name value: value [
 	^ false
 ]
 
+{ #category : #testing }
+DASTContextRootSmalltalk >> belongsToDoIt [
+
+	^ false
+]
+
 { #category : #'API-lookup' }
 DASTContextRootSmalltalk >> findLocalVariable: aName [
 	^ nil

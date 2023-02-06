@@ -3,7 +3,7 @@ Extension { #name : #Context }
 { #category : #'*DebuggableASTInterpreter' }
 Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 
-	| dastCtx bindings aimedNode |
+	| dastCtx bindings aimedNode currentNode |
 	"set current node and executed node stack and next nodes stack"
 	bindings := Dictionary new.
 	self tempNames do: [ :tempName |
@@ -17,17 +17,17 @@ Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 				             ifNil: [ closureOrNil "compiledBlock" ]
 				             ifNotNil: [ receiver ])
 		            messageNode: (sender
-				             ifNil: [ "closureOrNil ifNotNil: [" "]"
-					             RBMessageNode
-						             receiver: RBLiteralValueNode new
-						             selector: #value ]
+				             ifNil: [
+					             closureOrNil ifNotNil: [
+							             RBMessageNode
+								             receiver: RBLiteralValueNode new
+								             selector: #value ] ]
 				             ifNotNil: [ sender sourceNodeExecuted ])
 		            evaluator: aDASTInterpreter evaluator)
 		           temps: bindings associations;
 		           yourself ]
 		           on: Exception
-		           do: [ :exc |
-			           UIManager inform: exc printString.
+		           do: [ :exc | "UIManager inform: exc printString."
 			           ^ DASTContextRootSmalltalk new
 				             currentNode:
 					             (RBMessageNode
@@ -37,7 +37,10 @@ Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 
 	aimedNode := self compiledCode sourceNodeForPC: self pc.
 	[ aimedNode == dastCtx nodes top ] whileFalse: [
-		dastCtx executedNodes push: dastCtx nodes pop ].
+		dastCtx executedNodes push: (currentNode := dastCtx nodes pop) ].
+	dastCtx currentNode: currentNode.
+	(Interval from: self numTemps + 1 to: self stackPtr) do: [ :each |
+		dastCtx stack push: (self at: each) ].
 	^ dastCtx
 ]
 

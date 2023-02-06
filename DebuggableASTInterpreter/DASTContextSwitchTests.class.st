@@ -101,12 +101,49 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
 ]
 
 { #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStack [
+
+	| dastContext |
+	6 timesRepeat: [ context := context step ].
+
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+	self
+		assert: dastContext stack size
+		equals: context stackPtr - context numTemps.
+	(Interval from: 1 to: dastContext stack size) do: [ :index |
+		self
+			assert: (dastContext stack at: index)
+			identicalTo: (context at: context numTemps + index) ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStackRecursively [
+
+	| dastContext |
+	6 timesRepeat: [ context := context step ].
+
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	[ dastContext isRoot ] whileFalse: [
+		self
+			assert: dastContext stack size
+			equals: context stackPtr - context numTemps.
+		(Interval from: 1 to: dastContext stack size) do: [ :index |
+			self
+				assert: (dastContext stack at: index)
+				identicalTo: (context at: context numTemps + index) ].
+		context := context sender.
+		dastContext := dastContext sender ]
+]
+
+{ #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchMessageNodeIsLastSourceNodeExecutedFromSender [
 
-	| dastContext pc node |
+	| dastContext node |
 	4 timesRepeat: [ context := context step ].
 
-	pc := context pc.
 	dastContext := context asDASTContextInterpretedBy:
 		               DASTInterpreter new.
 
@@ -114,6 +151,30 @@ DASTContextSwitchTests >> testInterpreterSwitchMessageNodeIsLastSourceNodeExecut
 	node := context sender sourceNodeExecuted.
 
 	self assert: dastContext messageNode identicalTo: node
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchPutsRootBeforeFirstInterestingContext [
+
+	| dastContext |
+	4 timesRepeat: [ context step ].
+
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	self deny: dastContext isRoot.
+	self deny: dastContext isBlockContext.
+	self
+		assert: dastContext methodOrBlock compiledCode
+		identicalTo: context compiledCode.
+
+	self deny: dastContext sender isRoot.
+	self assert: dastContext sender isBlockContext.
+	self
+		assert: dastContext sender nodeAST compiledCode
+		identicalTo: context sender compiledCode.
+
+	self assert: dastContext sender sender isRoot
 ]
 
 { #category : #tests }

@@ -27,7 +27,8 @@ DASTMethodContext >> arguments [
 
 { #category : #testing }
 DASTMethodContext >> belongsToDoIt [
-	^false
+
+	^ self methodOrBlock isNoMethod
 ]
 
 { #category : #'API-lookup' }
