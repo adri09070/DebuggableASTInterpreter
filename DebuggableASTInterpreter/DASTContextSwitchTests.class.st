@@ -171,7 +171,7 @@ DASTContextSwitchTests >> testInterpreterSwitchPutsRootBeforeFirstInterestingCon
 	self deny: dastContext sender isRoot.
 	self assert: dastContext sender isBlockContext.
 	self
-		assert: dastContext sender methodOrBlock
+		assert: dastContext sender methodOrBlock nodeAST
 		equals: context sender compiledCode ast.
 
 	self assert: dastContext sender sender isRoot
