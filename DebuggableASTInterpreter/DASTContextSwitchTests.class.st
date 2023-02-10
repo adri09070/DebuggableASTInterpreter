@@ -198,6 +198,34 @@ DASTContextSwitchTests >> testInterpreterSwitchReceiverRemainsUnchanged [
 ]
 
 { #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchStepIsCorrect [
+
+	| dastContext pc node interpreter |
+	4 timesRepeat: [ context := context step ].
+
+	pc := context pc.
+	dastContext := context asDASTContextInterpretedBy:
+		               (interpreter := DASTInterpreter new).
+	node := context compiledCode sourceNodeForPC: context pc.
+
+	interpreter initializeWithContext: dastContext.
+
+	self assert: dastContext nodes top identicalTo: node.
+	self assert: dastContext canExecute.
+	self assert: interpreter currentContext identicalTo: dastContext.
+
+	"one step to evaluate a (40), one step to evaluate b (2) and one step to compute the sum"
+	interpreter
+		stepInto;
+		stepInto;
+		stepInto.
+
+	self assert: dastContext nodes top isReturn.
+	self assert: dastContext canExecute.
+	self assert: interpreter currentContext identicalTo: dastContext
+]
+
+{ #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPC [
 
 	| dastContext pc node |
