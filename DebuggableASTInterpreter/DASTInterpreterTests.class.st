@@ -274,6 +274,14 @@ DASTInterpreterTests >> testIfTrue [
 		  equals: 3
 ]
 
+{ #category : #'tests-contexts' }
+DASTInterpreterTests >> testIfTrueIfFalse [
+
+	self
+		assert: (self evaluateProgram: 'false ifTrue: [ ^3] ifFalse: [ ^2]')
+		equals: 2
+]
+
 { #category : #'tests-blocks' }
 DASTInterpreterTests >> testIfTrueThatWritesLocalVar [
 
@@ -927,6 +935,15 @@ DASTInterpreterTests >> testVarsLocalVariableModifiedInsideWhileTrueAndValueBloc
 	nextValue') 
 		  equals: 11
 		
+]
+
+{ #category : #'tests-blocks' }
+DASTInterpreterTests >> testWhileTrue [
+
+	self
+		assert: (self evaluateProgram:
+				 '|a| a := 0. [ a < 5 ] whileTrue: [a := a + 1 ]. ^ a')
+		equals: 5
 ]
 
 { #category : #'tests-self' }

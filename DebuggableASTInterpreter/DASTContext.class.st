@@ -37,7 +37,9 @@ DASTContext class >> newNoMethodContextWithProgram: aRBNode temps: aCollection e
 
 	rootContext := DASTContextRootSmalltalk new
 		               evaluator: anEvaluator;
-		               yourself.
+		               currentNode: (RBMessageNode
+				                receiver: (RBLiteralValueNode value: nil)
+				                selector: #value) yourself.
 
 	noMethod := DASTNoMethod new
 		            initializeWith: nodes last methodNode

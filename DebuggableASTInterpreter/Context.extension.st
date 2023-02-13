@@ -4,6 +4,7 @@ Extension { #name : #Context }
 Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 
 	| dastCtx bindings aimedNode currentNode dastSender |
+
 	bindings := Dictionary new.
 	self tempNames do: [ :tempName |
 		bindings at: tempName put: (self tempNamed: tempName) ].
@@ -26,9 +27,9 @@ Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 							            yourself ])
 				           messageNode: (dastSender isRoot
 						            ifTrue: [
-						            RBMessageNode
-							            receiver: RBMessageNode new
-							            selector: #value ]
+							            RBMessageNode
+								            receiver: (RBLiteralValueNode value: nil)
+								            selector: #value ]
 						            ifFalse: [ sender sourceNodeExecuted ])
 				           evaluator: aDASTInterpreter evaluator ].
 	dastCtx temps: bindings associations.
