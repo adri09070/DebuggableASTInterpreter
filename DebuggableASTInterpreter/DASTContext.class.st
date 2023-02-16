@@ -633,9 +633,7 @@ DASTContext >> privAsContext [
 
 	^ (Context newForMethod: self method)
 		  setSender: self sender asContext
-		  receiver: (self receiver isBlock
-				   ifFalse: [ self receiver ]
-				   ifTrue: [ self receiver nodeAST evaluate ])
+		  receiver: self receiver
 		  method: self methodOrBlock compiledCode
 		  closure: self methodOrBlock closure
 		  startpc: self methodOrBlock compiledCode initialPC

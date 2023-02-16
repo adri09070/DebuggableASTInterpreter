@@ -38,8 +38,11 @@ DASTContextSwitchTests >> setUp [
 { #category : #running }
 DASTContextSwitchTests >> tearDown [
 	"context terminate."
+
 	super tearDown.
-	
+	context := nil.
+	dastContext := nil.
+	dastInterpreter := nil
 ]
 
 { #category : #tests }
@@ -66,7 +69,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 
 	"The test fails because the AST of the compiled DoItMethod has a scope with nil indexes for each temp"
 
-	| tempNames dastReceiver |
+	| tempNames dastTemp |
 	6 timesRepeat: [ dastInterpreter stepInto ].
 
 	context := dastContext asContext.
@@ -74,16 +77,16 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 	[ dastContext isRoot ] whileFalse: [
 		tempNames := dastContext tempNames.
 		tempNames do: [ :temp |
-			dastReceiver := (dastContext findLocalVariable: temp) value.
-			dastReceiver isBlock
+			dastTemp := (dastContext findLocalVariable: temp) value.
+			dastTemp isBlock
 				ifFalse: [
 					self
 						assert: ((context lookupTempVar: temp) readInContext: context)
-						identicalTo: dastReceiver ]
+						identicalTo: dastTemp ]
 				ifTrue: [
 					self
-						assert: (dastContext findLocalVariable: temp) value
-						identicalTo: dastReceiver nodeAST evaluate ] ].
+						assert: ((context lookupTempVar: temp) readInContext: context)
+						identicalTo: dastTemp closure ] ].
 		context := context sender.
 		dastContext := dastContext sender ]
 ]
