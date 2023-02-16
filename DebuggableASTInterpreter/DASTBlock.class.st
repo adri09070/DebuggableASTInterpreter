@@ -32,7 +32,12 @@ DASTBlock >> bodyOffset [
 { #category : #accessing }
 DASTBlock >> closure [
 
-	^ self nodeAST evaluate
+	^ "closure ifNil: [ "self nodeAST evaluate
+		  "closure := Smalltalk compiler
+			             source: self sourceCode;
+			             context: self outerContext;
+			             receiver: self outerContext receiver;
+			             evaluate ]"
 ]
 
 { #category : #accessing }

@@ -46,10 +46,69 @@ DASTContextSwitchTests >> tearDown [
 ]
 
 { #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchBottomContextMapsToRootAndTerminatesProcess [
+
+	| process |
+	4 timesRepeat: [ dastInterpreter stepInto ].
+
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [
+		dastContext := dastContext sender.
+		context := context sender ].
+
+	self assert: context sender isNil.
+
+	process := Process
+		           forContext: context
+		           priority: Processor userInterruptPriority.
+
+	self deny: process isTerminated.
+	self shouldnt: [ process resume ] raise: BlockCannotReturn.
+	self assert: process isTerminated
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchCurrentPcIsFirstPcOfTopNodeOnStack [
+
+	| node |
+	4 timesRepeat: [ dastInterpreter stepInto ].
+
+	context := dastContext asContext.
+
+	node := dastContext nodes top.
+
+	self
+		assert: context pc
+		identicalTo:
+		(dastContext methodOrBlock nodeAST firstPcForNode: node)
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchCurrentPcIsFirstPcOfTopNodeOnStackRecursively [
+
+	| node |
+	4 timesRepeat: [ dastInterpreter stepInto ].
+	node := dastContext nodes top.
+
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [
+		node := dastContext nodes top.
+
+		self
+			assert: context pc
+			identicalTo:
+			(dastContext methodOrBlock nodeAST firstPcForNode: node).
+		context := context sender.
+		dastContext := dastContext sender ]
+]
+
+{ #category : #tests }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsBindings [
 	"we step after the node `b := 2  ` of StDebuggerObjectForTests>>#methodWithTempsAssignments has been executed"
 
-	6 timesRepeat: [ dastInterpreter stepInto ].
+	4 timesRepeat: [ dastInterpreter stepInto ].
 	self assert: (dastContext findLocalVariable: #a) value equals: 40.
 	self assert: (dastContext findLocalVariable: #b) value equals: 2.
 
@@ -67,10 +126,10 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindings [
 DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 	"we step after the node `b := 2  ` of StDebuggerObjectForTests>>#methodWithTempsAssignments has been executed"
 
-	"The test fails because the AST of the compiled DoItMethod has a scope with nil indexes for each temp"
+	"The test fails because I don't manage to get a compiled block (and thus a block closure) that contains the bindings of variables from the outer context. I suppose there are something to do with the compiler. I tried to compile the block in the DAST outer context but it doesn't work (DNU). I don't know if defining these messages would solve the problem"
 
 	| tempNames dastTemp |
-	6 timesRepeat: [ dastInterpreter stepInto ].
+	4 timesRepeat: [ dastInterpreter stepInto ].
 
 	context := dastContext asContext.
 
@@ -94,7 +153,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 { #category : #tests }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiver [
 
-	6 timesRepeat: [ dastInterpreter stepInto ].
+	4 timesRepeat: [ dastInterpreter stepInto ].
 
 	context := dastContext asContext.
 	self assert: context receiver identicalTo: dastContext receiver
@@ -103,13 +162,138 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiver [
 { #category : #tests }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiversRecursively [
 
-	6 timesRepeat: [ dastInterpreter stepInto ].
+	4 timesRepeat: [ dastInterpreter stepInto ].
 	context := dastContext asContext.
 
 	[ dastContext isRoot ] whileFalse: [
 		self assert: context receiver identicalTo: dastContext receiver.
 		context := context sender.
 		dastContext := dastContext sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStack [
+
+	| stack |
+	4 timesRepeat: [ dastInterpreter stepInto ].
+	stack := dastContext stack.
+
+	context := dastContext asContext.
+
+	self
+		assert: context stackPtr
+		equals: dastContext allTemps size + stack size.
+	self assert: dastContext allTemps size equals: context numTemps.
+	(Interval from: 1 to: stack size) do: [ :index |
+		self
+			assert: (dastContext stack at: index)
+			identicalTo: (context at: context numTemps + index) ].
+	(Interval from: 1 to: dastContext allTemps size) do: [ :index |
+		self
+			assert: (context at: index)
+			identicalTo: (dastContext allTemps at: index) value ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStackRecursively [
+
+	| stack |
+	"The test fails because a block context relies on its variable dict to build the new context's stack, instead of allTemps. Maybe (Surely) that my approach of using allTemps is wrong but this block context needs at least a vector of temps from allTemps."
+	4 timesRepeat: [ dastInterpreter stepInto ].
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [
+		stack := dastContext stack.
+
+		self
+			assert: context stackPtr
+			equals: dastContext allTemps size + stack size.
+		self assert: dastContext allTemps size equals: context numTemps.
+		(Interval from: 1 to: stack size) do: [ :index |
+			self
+				assert: (dastContext stack at: index)
+				identicalTo: (context at: context numTemps + index) ].
+		(Interval from: 1 to: dastContext allTemps size) do: [ :index |
+			self
+				assert: (context at: index)
+				identicalTo: (dastContext allTemps at: index) value ].
+		dastContext := dastContext sender.
+		context := context sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchProcessResume [
+
+	| process |
+	context := dastContext asContext.
+
+	process := Process
+		           forContext: context
+		           priority: Processor userInterruptPriority.
+
+	[ dastContext isRoot ] whileFalse: [
+		context := context sender.
+		dastContext := dastContext sender ].
+
+	process completeTo: context.
+
+	self assert: process suspendedContext top equals: 42.
+
+	self deny: process isTerminated.
+
+	self shouldnt: [ process resume ] raise: BlockCannotReturn.
+
+	self assert: process isTerminated
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchReceiverRemainsUnchanged [
+
+	| instVars oldInstVarValues newInstVarValues |
+	4 timesRepeat: [ dastInterpreter stepInto ].
+
+	instVars := dastContext receiver class allInstVarNames.
+	oldInstVarValues := instVars collect: [ :inst |
+		                    dastContext receiver instVarNamed: inst ].
+
+	context := dastContext asContext.
+
+	newInstVarValues := instVars collect: [ :inst |
+		                    context receiver instVarNamed: inst ].
+
+	oldInstVarValues withIndexDo: [ :each :index |
+		self assert: each identicalTo: (newInstVarValues at: index) ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchStepIsCorrect [
+
+	| pc node process |
+	4 timesRepeat: [ dastInterpreter stepInto ].
+
+	node := dastContext nodes top.
+	context := dastContext asContext.
+	pc := dastContext methodOrBlock nodeAST firstPcForNode: node.
+
+	process := Process
+		           forContext: context
+		           priority: Processor userInterruptPriority.
+
+	self assert: process suspendedContext pc identicalTo: pc.
+	self deny: context isDead.
+	self assert: process suspendedContext identicalTo: context.
+
+	"one step to evaluate a (40), one step to evaluate b (2) and one step to compute the sum"
+	process
+		step;
+		step;
+		step.
+
+	self assert: process suspendedContext top equals: 42.
+	self assert: (process suspendedContext compiledCode sourceNodeForPC:
+			 process suspendedContext pc) isReturn.
+	self deny: process suspendedContext isDead.
+	self assert: process suspendedContext identicalTo: context
 ]
 
 { #category : #tests }

@@ -15,9 +15,10 @@ DASTBlockContext >> allInstVars [
 
 { #category : #'accessing - private' }
 DASTBlockContext >> allTemps [
-	^ self variablesDict associations ,
-	  closure outerContext allTemps , 
-	  sender allTemps 
+
+	self flag: 'I really think that this statement duplicates temps'.
+	^ self variablesDict associations , closure outerContext allTemps
+	  , sender allTemps
 ]
 
 { #category : #testing }
