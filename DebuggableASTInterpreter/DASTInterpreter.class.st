@@ -156,11 +156,23 @@ DASTInterpreter >> initializeWithProgram: aRBNode inContext: aDASTContext [
 
 { #category : #initialization }
 DASTInterpreter >> initializeWithProgram: aRBNode withTemps: aCollection astCache: anIdentityDictionary [
-	
-	astCache := anIdentityDictionary. 
-	programCounter := 0.
-	currentContext := DASTContext newNoMethodContextWithProgram: aRBNode temps: aCollection evaluator: self evaluator
 
+	| compiledMethod doItMethodNode |
+	astCache := anIdentityDictionary.
+	programCounter := 0.
+	"aRBNode methodNode generateWithSource."
+
+	compiledMethod := UndefinedObject compiler
+		                  noPattern: true;
+		                  compile: aRBNode methodNode source.
+	doItMethodNode := compiledMethod ast.
+	"(doItMethodNode
+		 doSemanticAnalysis;
+		 ir)" "generate".
+	currentContext := DASTContext
+		                  newNoMethodContextWithProgram: doItMethodNode body
+		                  temps: aCollection
+		                  evaluator: self evaluator
 ]
 
 { #category : #testing }

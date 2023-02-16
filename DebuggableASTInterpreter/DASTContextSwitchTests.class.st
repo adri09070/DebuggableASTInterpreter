@@ -2,19 +2,36 @@ Class {
 	#name : #DASTContextSwitchTests,
 	#superclass : #TestCase,
 	#instVars : [
-		'context'
+		'context',
+		'dastInterpreter',
+		'dastContext'
 	],
 	#category : #'DebuggableASTInterpreter-Tests'
 }
 
 { #category : #running }
 DASTContextSwitchTests >> setUp [
+
 	| debuggerObjectForTest |
 	super setUp.
+	"context initialization"
 	debuggerObjectForTest := StDebuggerObjectForTests new.
-	context := [  debuggerObjectForTest methodWithTempsAssignments ] asContext.
-	2 timesRepeat: [ context := context step ]
-	
+	context := [ debuggerObjectForTest methodWithTempsAssignments ]
+		           asContext.
+	2 timesRepeat: [ context := context step ].
+
+	"DASTInterpreter initialization (which initializes DAST contexts)"
+	dastInterpreter := DASTInterpreter new.
+	dastInterpreter initializeWithProgram:
+		(RBParser parseExpression: '| debuggerObjectForTest block | 
+				debuggerObjectForTest := StDebuggerObjectForTests new. 
+				block := [ debuggerObjectForTest methodWithTempsAssignments ]. 
+				block value').
+	"We step until we step into StDebuggerObjectForTests>>#methodWithTempsAssignments"
+	8 timesRepeat: [ dastInterpreter stepOver ].
+	5 timesRepeat: [ dastInterpreter stepInto ].
+	dastContext := dastInterpreter currentContext
+
 	"Put here a common initialization logic for tests"
 ]
 
@@ -26,9 +43,76 @@ DASTContextSwitchTests >> tearDown [
 ]
 
 { #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchKeepsBindings [
+	"we step after the node `b := 2  ` of StDebuggerObjectForTests>>#methodWithTempsAssignments has been executed"
+
+	6 timesRepeat: [ dastInterpreter stepInto ].
+	self assert: (dastContext findLocalVariable: #a) value equals: 40.
+	self assert: (dastContext findLocalVariable: #b) value equals: 2.
+
+	context := dastContext asContext.
+
+	self
+		assert: ((context lookupTempVar: #a) readInContext: context)
+		equals: 40.
+	self
+		assert: ((context lookupTempVar: #b) readInContext: context)
+		equals: 2
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
+	"we step after the node `b := 2  ` of StDebuggerObjectForTests>>#methodWithTempsAssignments has been executed"
+
+	"The test fails because the AST of the compiled DoItMethod has a scope with nil indexes for each temp"
+
+	| tempNames dastReceiver |
+	6 timesRepeat: [ dastInterpreter stepInto ].
+
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [
+		tempNames := dastContext tempNames.
+		tempNames do: [ :temp |
+			dastReceiver := (dastContext findLocalVariable: temp) value.
+			dastReceiver isBlock
+				ifFalse: [
+					self
+						assert: ((context lookupTempVar: temp) readInContext: context)
+						identicalTo: dastReceiver ]
+				ifTrue: [
+					self
+						assert: (dastContext findLocalVariable: temp) value
+						identicalTo: dastReceiver nodeAST evaluate ] ].
+		context := context sender.
+		dastContext := dastContext sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiver [
+
+	6 timesRepeat: [ dastInterpreter stepInto ].
+
+	context := dastContext asContext.
+	self assert: context receiver identicalTo: dastContext receiver
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiversRecursively [
+
+	6 timesRepeat: [ dastInterpreter stepInto ].
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [
+		self assert: context receiver identicalTo: dastContext receiver.
+		context := context sender.
+		dastContext := dastContext sender ]
+]
+
+{ #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchCurrentNodeIsLastExecutedNode [
 
-	| dastContext node |
+	| node |
 	4 timesRepeat: [ context := context step ].
 
 	dastContext := context asDASTContextInterpretedBy:
@@ -42,7 +126,7 @@ DASTContextSwitchTests >> testInterpreterSwitchCurrentNodeIsLastExecutedNode [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchEvaluateAfterSwitchCanFindBindingsOfObjectsDefinedOutsideOfClosuresInContextThatDoesNotHaveDASTEquivalent [
 
-	| dastContext debuggerObjectForTest interpreter |
+	| debuggerObjectForTest interpreter |
 	debuggerObjectForTest := StDebuggerObjectForTests new.
 	context := [ debuggerObjectForTest methodWithTempsAssignments ]
 		           asContext.
@@ -56,7 +140,6 @@ DASTContextSwitchTests >> testInterpreterSwitchEvaluateAfterSwitchCanFindBinding
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsBindings [
 
-	| dastContext |
 	4 timesRepeat: [ context := context step ].
 	self
 		assert: ((context lookupTempVar: #a) readInContext: context)
@@ -74,7 +157,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsBindings [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsBindingsRecursively [
 
-	| dastContext tempNames |
+	| tempNames |
 	4 timesRepeat: [ context := context step ].
 	dastContext := context asDASTContextInterpretedBy:
 		               DASTInterpreter new.
@@ -92,7 +175,6 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsBindingsRecursively [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiver [
 
-	| dastContext |
 	4 timesRepeat: [ context := context step ].
 
 	dastContext := context asDASTContextInterpretedBy:
@@ -103,7 +185,6 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiver [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
 
-	| dastContext |
 	self skip.
 	4 timesRepeat: [ context := context step ].
 	dastContext := context asDASTContextInterpretedBy:
@@ -118,7 +199,6 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStack [
 
-	| dastContext |
 	6 timesRepeat: [ context := context step ].
 
 	dastContext := context asDASTContextInterpretedBy:
@@ -135,7 +215,6 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStack [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStackRecursively [
 
-	| dastContext |
 	6 timesRepeat: [ context := context step ].
 
 	dastContext := context asDASTContextInterpretedBy:
@@ -156,7 +235,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStackRecursively [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchMessageNodeIsLastSourceNodeExecutedFromSender [
 
-	| dastContext node |
+	| node |
 	4 timesRepeat: [ context := context step ].
 
 	dastContext := context asDASTContextInterpretedBy:
@@ -171,7 +250,6 @@ DASTContextSwitchTests >> testInterpreterSwitchMessageNodeIsLastSourceNodeExecut
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchPutsRootBeforeFirstInterestingContext [
 
-	| dastContext |
 	4 timesRepeat: [ context step ].
 
 	dastContext := context asDASTContextInterpretedBy:
@@ -195,7 +273,7 @@ DASTContextSwitchTests >> testInterpreterSwitchPutsRootBeforeFirstInterestingCon
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchReceiverRemainsUnchanged [
 
-	| dastContext instVars oldInstVarValues newInstVarValues |
+	| instVars oldInstVarValues newInstVarValues |
 	4 timesRepeat: [ context := context step ].
 
 	instVars := context receiver class allInstVarNames.
@@ -215,7 +293,7 @@ DASTContextSwitchTests >> testInterpreterSwitchReceiverRemainsUnchanged [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchStepIsCorrect [
 
-	| dastContext pc node interpreter |
+	| pc node interpreter |
 	4 timesRepeat: [ context := context step ].
 
 	pc := context pc.
@@ -243,7 +321,7 @@ DASTContextSwitchTests >> testInterpreterSwitchStepIsCorrect [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPC [
 
-	| dastContext pc node |
+	| pc node |
 	4 timesRepeat: [ context := context step ].
 
 	pc := context pc.
@@ -257,7 +335,7 @@ DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPC [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPCRecursively [
 
-	| dastContext pcs node |
+	| pcs node |
 	4 timesRepeat: [ context := context step ].
 
 	pcs := context stack collect: [ :ctx | ctx pc ].

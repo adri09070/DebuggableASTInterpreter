@@ -633,7 +633,9 @@ DASTContext >> privAsContext [
 
 	^ (Context newForMethod: self method)
 		  setSender: self sender asContext
-		  receiver: self receiver
+		  receiver: (self receiver isBlock
+				   ifFalse: [ self receiver ]
+				   ifTrue: [ self receiver nodeAST evaluate ])
 		  method: self methodOrBlock compiledCode
 		  closure: self methodOrBlock closure
 		  startpc: self methodOrBlock compiledCode initialPC
@@ -643,8 +645,13 @@ DASTContext >> privAsContext [
 DASTContext >> privCopyStackInContext: newContext [
 
 	newContext stackp: 0.
-	(self variablesDict associations collect: [ :each | each value ])
-	, self stack do: [ :each | newContext push: each ]
+	(self variablesDict associations collect: [ :each |
+		 | value |
+		 value := each value.
+		 value isBlock
+			 ifFalse: [ value ]
+			 ifTrue: [ value nodeAST evaluate ] ]) , self stack do: [ :each |
+		newContext push: each ]
 ]
 
 { #category : #accessing }
