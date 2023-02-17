@@ -372,7 +372,6 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiver [
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
 
-	self skip.
 	4 timesRepeat: [ context := context step ].
 	dastContext := context asDASTContextInterpretedBy:
 		               DASTInterpreter new.

@@ -4,7 +4,6 @@ Extension { #name : #Context }
 Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 
 	| dastCtx bindings aimedNode currentNode dastSender |
-
 	bindings := Dictionary new.
 	self tempNames do: [ :tempName |
 		bindings at: tempName put: (self tempNamed: tempName) ].
@@ -23,7 +22,12 @@ Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 					           (closureOrNil ifNil: [ receiver ] ifNotNil: [
 						            DASTBlock new
 							            nodeAST: closureOrNil compiledBlock ast;
-							            outerContext: dastSender;
+							            outerContext: (dastSender isRoot
+									             ifFalse: [ dastSender ]
+									             ifTrue: [
+										             self flag:
+												             'Maybe it is weird that the outer context is a context but I haven''t found a better solution yet.'.
+										             self outerContext ]);
 							            yourself ])
 				           messageNode: (dastSender isRoot
 						            ifTrue: [
@@ -34,7 +38,11 @@ Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 				           evaluator: aDASTInterpreter evaluator ].
 	dastCtx temps: bindings associations.
 
-	aimedNode := self compiledCode sourceNodeForPC: self pc.
+	self pc
+		ifNil: [
+			aimedNode := dastCtx nodes first.
+			dastCtx isDead: true ]
+		ifNotNil: [ aimedNode := self compiledCode sourceNodeForPC: self pc ].
 	[ aimedNode == dastCtx nodes top ] whileFalse: [
 		dastCtx executedNodes push: (currentNode := dastCtx nodes pop) ].
 	dastCtx currentNode: currentNode.
