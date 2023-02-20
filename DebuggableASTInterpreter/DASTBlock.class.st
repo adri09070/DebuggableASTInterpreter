@@ -32,8 +32,12 @@ DASTBlock >> bodyOffset [
 { #category : #accessing }
 DASTBlock >> closure [
 
-	^ "closure ifNil: [ "self nodeAST evaluate
-		  "closure := Smalltalk compiler
+	^ FullBlockClosure new
+		  compiledBlock: self nodeAST ir compiledMethod;
+		  receiver: self outerContext receiver;
+		  numArgs: self nodeAST numArgs;
+		  outerContext: self outerContext "closure ifNil: [ ""self nodeAST evaluate"
+	"closure := Smalltalk compiler
 			             source: self sourceCode;
 			             context: self outerContext;
 			             receiver: self outerContext receiver;
@@ -43,7 +47,7 @@ DASTBlock >> closure [
 { #category : #accessing }
 DASTBlock >> compiledCode [
 
-	^ self closure compiledBlock
+	^ self nodeAST ir compiledMethod
 ]
 
 { #category : #accessing }

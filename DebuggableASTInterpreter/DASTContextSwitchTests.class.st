@@ -216,7 +216,9 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStackRecursively [
 		(Interval from: 1 to: dastContext allTemps size) do: [ :index |
 			self
 				assert: (context at: index)
-				identicalTo: (dastContext allTemps at: index) value ].
+				identicalTo:
+				(dastContext tempNamed: (dastContext allTemps at: index) key)
+					value ].
 		dastContext := dastContext sender.
 		context := context sender ]
 ]

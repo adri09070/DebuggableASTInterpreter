@@ -90,6 +90,12 @@ DASTMethodContext >> initializeContext [
 	
 ]
 
+{ #category : #helpers }
+DASTMethodContext >> ir [
+
+	^ self methodOrBlock nodeAST compiledMethod ir
+]
+
 { #category : #initialization }
 DASTMethodContext >> isBlockContext [ 
 	^ false

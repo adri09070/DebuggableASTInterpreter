@@ -466,6 +466,12 @@ DASTContext >> initialize [
 	tempVarIndex := 0
 ]
 
+{ #category : #helpers }
+DASTContext >> ir [
+
+	self subclassResponsibility
+]
+
 { #category : #testing }
 DASTContext >> isBlockContext [
 
@@ -643,13 +649,18 @@ DASTContext >> privAsContext [
 DASTContext >> privCopyStackInContext: newContext [
 
 	newContext stackp: 0.
-	(self variablesDict associations collect: [ :each |
+	(self ir tempMap associations sorted: [ :assoc1 :assoc2 |
+		 assoc1 value <= assoc2 value ]) do: [ :each |
+		newContext push:
+			(self allTemps detect: [ :tempAssoc | tempAssoc key == each key ])
+				value ].
+	"(self variablesDict associations collect: [ :each |
 		 | value |
 		 value := each value.
 		 value isBlock
 			 ifFalse: [ value ]
-			 ifTrue: [ value nodeAST evaluate ] ]) , self stack do: [ :each |
-		newContext push: each ]
+			 ifTrue: [ value nodeAST evaluate ] ]) ,"
+	self stack do: [ :each | newContext push: each ]
 ]
 
 { #category : #accessing }

@@ -17,7 +17,7 @@ DASTBlockContext >> allInstVars [
 DASTBlockContext >> allTemps [
 
 	self flag: 'I really think that this statement duplicates temps'.
-	^ self variablesDict associations , closure outerContext allTemps
+	^ self variablesDict associations ", closure outerContext allTemps"
 	  , sender allTemps
 ]
 
@@ -62,6 +62,12 @@ DASTBlockContext >> initializeContext [
 	self 	methodOrBlock: receiver;
 			nodes: nodes.
 	
+]
+
+{ #category : #helpers }
+DASTBlockContext >> ir [
+
+	^ self methodOrBlock nodeAST ir
 ]
 
 { #category : #initialization }
