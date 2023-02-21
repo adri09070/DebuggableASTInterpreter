@@ -19,10 +19,25 @@ DASTDebugger class >> debugSession: aDebugSession [
 	| dast |
 	dast := self basicNew.
 	dast simulatorSession: aDebugSession.
+	aDebugSession stepInto.
+	aDebugSession stepInto.
 	dast interpreter:
 		(DASTInterpreter startFromContext: aDebugSession interruptedContext).
 	dast initialize.
 	dast open
+]
+
+{ #category : #accessing }
+DASTDebugger class >> defaultDebuggerRank [
+
+	^ 10
+]
+
+{ #category : #debugging }
+DASTDebugger class >> handlesContext: aContext [
+	|handlesContext|
+	handlesContext := aContext receiver class = DASTBreakpoint.
+	^handlesContext 
 ]
 
 { #category : #initialization }
