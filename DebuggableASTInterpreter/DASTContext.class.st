@@ -157,6 +157,17 @@ DASTContext >> at: aByteSymbol put: anObject [
 	
 ]
 
+{ #category : #'as yet unclassified' }
+DASTContext >> bcValueForAnObject: anObject forContext: newContext [
+
+	| bcValue |
+	anObject isBlock ifTrue: [
+		anObject pharoOuterContext ifNil: [
+			anObject pharoOuterContext: newContext ] ].
+	bcValue := anObject dastToBcValue.
+	^ bcValue
+]
+
 { #category : #testing }
 DASTContext >> canExecute [
 	^ self nodes isNotEmpty and: [ self unhandledException isNil ]
@@ -653,12 +664,32 @@ DASTContext >> privCopyStackInContext: newContext [
 	(self ir tempMap associations sorted: [ :assoc1 :assoc2 |
 		 assoc1 value <= assoc2 value ]) do: [ :each |
 		| value |
+		[
 		value := (self allTemps detect: [ :tempAssoc |
-			          tempAssoc key == each key ]) value.
-		value isBlock ifTrue: [
-			value pharoOuterContext ifNil: [
-				value pharoOuterContext: newContext ] ].
-		newContext push: value dastToBcValue ].
+			          tempAssoc key == each key ]) value ]
+			on: NotFound
+			do: [ "newContext sender or newContext outerContext"
+				[ value := newContext sender tempNamed: each key ]
+					on: Error
+					do: [
+						| scope tempVector index |
+						scope := self methodOrBlock nodeAST scope.
+						self
+							assert: scope tempVector isEmpty not
+							description: 'Temp named ' , each key , ' is missing'.
+						tempVector := scope tempVector.
+						value := Array new: tempVector size.
+						index := 1.
+						tempVector keysDo: [ :key |
+							value
+								at: index
+								put:
+								(self
+									 bcValueForAnObject: (self tempNamed: key)
+									 forContext: newContext).
+							index := index + 1 ] ] ].
+		newContext push:
+			(self bcValueForAnObject: value forContext: newContext) ].
 	"(self variablesDict associations collect: [ :each |
 		 | value |
 		 value := each value.
@@ -666,9 +697,8 @@ DASTContext >> privCopyStackInContext: newContext [
 			 ifFalse: [ value ]
 			 ifTrue: [ value nodeAST evaluate ] ]) ,"
 	self stack do: [ :each |
-		each isBlock ifTrue: [
-			each pharoOuterContext ifNil: [ each pharoOuterContext: newContext ] ].
-		newContext push: each dastToBcValue ]
+		newContext push:
+			(self bcValueForAnObject: each forContext: newContext) ]
 ]
 
 { #category : #accessing }
