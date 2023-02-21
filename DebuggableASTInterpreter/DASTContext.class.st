@@ -456,12 +456,13 @@ DASTContext >> hasSender: context [
 
 { #category : #initialization }
 DASTContext >> initialize [
+
 	super initialize.
 	stack := DASTStack new.
 	executedNodes := DASTStack new.
 	nodes := DASTStack new.
 	currentNode := nil.
-	variablesDict := Dictionary new.
+	variablesDict := OrderedDictionary new.
 	tempVarsNamesIndexes := Dictionary new.
 	tempVarIndex := 0
 ]
@@ -651,16 +652,23 @@ DASTContext >> privCopyStackInContext: newContext [
 	newContext stackp: 0.
 	(self ir tempMap associations sorted: [ :assoc1 :assoc2 |
 		 assoc1 value <= assoc2 value ]) do: [ :each |
-		newContext push:
-			(self allTemps detect: [ :tempAssoc | tempAssoc key == each key ])
-				value ].
+		| value |
+		value := (self allTemps detect: [ :tempAssoc |
+			          tempAssoc key == each key ]) value.
+		value isBlock ifTrue: [
+			value pharoOuterContext ifNil: [
+				value pharoOuterContext: newContext ] ].
+		newContext push: value dastToBcValue ].
 	"(self variablesDict associations collect: [ :each |
 		 | value |
 		 value := each value.
 		 value isBlock
 			 ifFalse: [ value ]
 			 ifTrue: [ value nodeAST evaluate ] ]) ,"
-	self stack do: [ :each | newContext push: each ]
+	self stack do: [ :each |
+		each isBlock ifTrue: [
+			each pharoOuterContext ifNil: [ each pharoOuterContext: newContext ] ].
+		newContext push: each dastToBcValue ]
 ]
 
 { #category : #accessing }

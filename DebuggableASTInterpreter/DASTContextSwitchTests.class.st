@@ -9,6 +9,18 @@ Class {
 	#category : #'DebuggableASTInterpreter-Tests'
 }
 
+{ #category : #tests }
+DASTContextSwitchTests >> assertFullBlock: fullBlock equalsDASTBlock: dastBlock [
+
+	| closure |
+	closure := dastBlock closure.
+	^ self
+		  assert: fullBlock compiledBlock
+		  identicalTo: closure compiledBlock;
+		  assert: fullBlock outerContext identicalTo: closure outerContext;
+		  assert: fullBlock receiver identicalTo: closure receiver
+]
+
 { #category : #running }
 DASTContextSwitchTests >> setUp [
 
@@ -134,7 +146,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 	context := dastContext asContext.
 
 	[ dastContext isRoot ] whileFalse: [
-		tempNames := dastContext tempNames.
+		tempNames := dastContext allTemps collect: [ :each | each key ].
 		tempNames do: [ :temp |
 			dastTemp := (dastContext findLocalVariable: temp) value.
 			dastTemp isBlock
@@ -143,9 +155,10 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 						assert: ((context lookupTempVar: temp) readInContext: context)
 						identicalTo: dastTemp ]
 				ifTrue: [
-					self
-						assert: ((context lookupTempVar: temp) readInContext: context)
-						identicalTo: dastTemp closure ] ].
+					| contextTemp closure |
+					contextTemp := (context lookupTempVar: temp) readInContext:
+						               context.
+					self assertFullBlock: contextTemp equalsDASTBlock: dastTemp ] ].
 		context := context sender.
 		dastContext := dastContext sender ]
 ]
@@ -197,7 +210,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStack [
 { #category : #tests }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStackRecursively [
 
-	| stack |
+	| stack dastElement contextElement |
 	"The test fails because a block context relies on its variable dict to build the new context's stack, instead of allTemps. Maybe (Surely) that my approach of using allTemps is wrong but this block context needs at least a vector of temps from allTemps."
 	4 timesRepeat: [ dastInterpreter stepInto ].
 	context := dastContext asContext.
@@ -207,18 +220,23 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStackRecursively [
 
 		self
 			assert: context stackPtr
-			equals: dastContext allTemps size + stack size.
-		self assert: dastContext allTemps size equals: context numTemps.
+			equals: dastContext ir tempMap size + stack size.
+		self assert: dastContext ir tempMap size equals: context numTemps.
 		(Interval from: 1 to: stack size) do: [ :index |
-			self
-				assert: (dastContext stack at: index)
-				identicalTo: (context at: context numTemps + index) ].
-		(Interval from: 1 to: dastContext allTemps size) do: [ :index |
-			self
-				assert: (context at: index)
-				identicalTo:
-				(dastContext tempNamed: (dastContext allTemps at: index) key)
-					value ].
+			dastElement := dastContext stack at: index.
+			contextElement := context at: context numTemps + index.
+			dastElement isBlock
+				ifFalse: [ self assert: contextElement identicalTo: dastElement ]
+				ifTrue: [
+				self assertFullBlock: contextElement equalsDASTBlock: dastElement ] ].
+		(Interval from: 1 to: dastContext ir tempMap size) do: [ :index |
+			contextElement := context at: index.
+			dastElement := (dastContext tempNamed:
+				                (dastContext allTemps at: index) key) value.
+			dastElement isBlock
+				ifFalse: [ self assert: contextElement identicalTo: dastElement ]
+				ifTrue: [
+				self assertFullBlock: contextElement equalsDASTBlock: dastElement ] ].
 		dastContext := dastContext sender.
 		context := context sender ]
 ]
