@@ -8,7 +8,8 @@ Class {
 		'code',
 		'interpreter',
 		'toolBar',
-		'simulatorSession'
+		'simulatorSession',
+		'switchButton'
 	],
 	#category : #DebuggableASTDebugger
 }
@@ -81,7 +82,13 @@ DASTDebugger >> clear [
 DASTDebugger >> defaultLayout [
 
 	^ SpBoxLayout newVertical
-		  add: stack;
+		  add: (SpBoxLayout newTopToBottom
+				   add: switchButton
+				   expand: false
+				   fill: false
+				   padding: 5;
+				   add: stack;
+				   yourself);
 		  add: toolBar expand: false;
 		  add: code;
 		  yourself
@@ -95,6 +102,7 @@ DASTDebugger >> initializePresenters [
 		         transmitDo: [ :ctx | self updateCodeFromContext: ctx ];
 		         yourself.
 	toolBar := self buildToolbar.
+	switchButton := self newButton action: [ self switchToOtherDebugger ].
 	self updateStack
 ]
 
@@ -144,6 +152,22 @@ DASTDebugger >> stepThrough [
 
 	interpreter stepThrough.
 	self updateStack
+]
+
+{ #category : #initialization }
+DASTDebugger >> switchToOtherDebugger [
+
+	| context process |
+	context := interpreter currentContext asContext.
+	process := Process
+		           forContext: context
+		           priority: Processor userInterruptPriority.
+	(OupsDebugRequest newForContext: context)
+		label: context compiledCode printString;
+		process: process;
+		submit.
+	self clear.
+	self window close
 ]
 
 { #category : #'presenter - code' }
