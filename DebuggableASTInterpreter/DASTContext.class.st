@@ -23,10 +23,17 @@ Class {
 		'isDead'
 	],
 	#classVars : [
+		'BcToDASTContextMap',
 		'valueToBlockMessages'
 	],
 	#category : #'DebuggableASTInterpreter-Contexts'
 }
+
+{ #category : #'as yet unclassified' }
+DASTContext class >> bcToDASTContextMap [
+
+	^ BcToDASTContextMap ifNil: [ BcToDASTContextMap := WeakIdentityKeyDictionary new ]
+]
 
 { #category : #instantiation }
 DASTContext class >> newNoMethodContextWithProgram: aRBNode temps: aCollection evaluator: anEvaluator [
