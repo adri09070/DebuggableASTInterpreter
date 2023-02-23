@@ -4,9 +4,6 @@ If I'm signaled, the interpreter evaluation should pause
 "
 Class {
 	#name : #DASTException,
-	#superclass : #Object,
-	#instVars : [
-		'messageText'
-	],
+	#superclass : #Exception,
 	#category : #'DebuggableASTInterpreter-Exceptions'
 }
