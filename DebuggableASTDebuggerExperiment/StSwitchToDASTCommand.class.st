@@ -16,16 +16,14 @@ StSwitchToDASTCommand class >> defaultShortcut [
 	^ $d meta , $s meta
 ]
 
-{ #category : #execution }
+{ #category : #executing }
 StSwitchToDASTCommand >> execute [
 
 	| session |
 	session := self context session.
 	self context programmaticallyClose.
 	(OupsDebugRequest newForContext: context)
-		label: context compiledCode printString;
-		exception: (DASTException new
-				 signaler: self context session receiver;
-				 yourself);
+		label: session interruptedContext compiledCode printString;
+		exception: (DASTException fromSignallerContext: session interruptedContext);
 		"DASTDebugger debugSession: session"submit
 ]
