@@ -9,16 +9,65 @@ Class {
 	#category : #'DebuggableASTInterpreter-Tests'
 }
 
-{ #category : #tests }
+{ #category : #'tests - helper' }
 DASTContextSwitchTests >> assertFullBlock: fullBlock equalsDASTBlock: dastBlock [
 
 	| closure |
+	self assert: fullBlock isClosure.
+	self assert: dastBlock isBlock.
 	closure := dastBlock closure.
 	^ self
 		  assert: fullBlock compiledBlock
 		  identicalTo: closure compiledBlock;
 		  assert: fullBlock outerContext identicalTo: closure outerContext;
 		  assert: fullBlock receiver identicalTo: closure receiver
+]
+
+{ #category : #'tests - helper' }
+DASTContextSwitchTests >> bcStepUntil: aBlock [
+
+	aBlock whileTrue: [ context := context step ]
+]
+
+{ #category : #'as yet unclassified' }
+DASTContextSwitchTests >> contextOnMethodWithTempVector [
+
+	context := [
+	           | debuggerObjectForTest block a b |
+	           debuggerObjectForTest := StDebuggerObjectForTests new.
+	           a := 0.
+	           block := [
+	                    | c |
+	                    debuggerObjectForTest methodWithTempsAssignments.
+	                    1 = 2 ifTrue: [ block value ].
+	                    a := a + 1.
+	                    b := 0.
+	                    c := 0.
+	                    [
+	                    a := a + 2.
+	                    c := c + 4.
+	                    b := b + 3 ] value ].
+	           block value + b + a ] asContext
+]
+
+{ #category : #'tests - helper' }
+DASTContextSwitchTests >> dastStepUntil: aBlock [
+
+	aBlock whileTrue: [ dastInterpreter stepInto ].
+	dastContext := dastInterpreter currentContext
+]
+
+{ #category : #'tests - helper' }
+DASTContextSwitchTests >> interpreterOnMethodWithTempVector [
+
+	dastInterpreter initializeWithProgram:
+		(RBParser parseExpression: '| debuggerObjectForTest block a b | 
+				debuggerObjectForTest := StDebuggerObjectForTests new. 
+				a := 0.
+				block := [ | c | debuggerObjectForTest methodWithTempsAssignments. 1=2 ifTrue: [ block value ]. a := a + 1. b:=0. c:=0 . [ a:= a + 2. c:=c+4. b:=b+3 ] value ].
+				^ block value + b + a').
+
+	dastContext := dastInterpreter currentContext
 ]
 
 { #category : #running }
@@ -43,8 +92,6 @@ DASTContextSwitchTests >> setUp [
 	8 timesRepeat: [ dastInterpreter stepOver ].
 	5 timesRepeat: [ dastInterpreter stepInto ].
 	dastContext := dastInterpreter currentContext
-
-	"Put here a common initialization logic for tests"
 ]
 
 { #category : #running }
@@ -155,7 +202,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 						assert: ((context lookupTempVar: temp) readInContext: context)
 						identicalTo: dastTemp ]
 				ifTrue: [
-					| contextTemp closure |
+					| contextTemp |
 					contextTemp := (context lookupTempVar: temp) readInContext:
 						               context.
 					self assertFullBlock: contextTemp equalsDASTBlock: dastTemp ] ].
@@ -317,6 +364,188 @@ DASTContextSwitchTests >> testBytecodeSwitchStepIsCorrect [
 ]
 
 { #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchTempVectorBindings [
+
+	| dastTemp  |
+	self
+		interpreterOnMethodWithTempVector;
+		dastStepUntil: [
+			(dastInterpreter currentNode isMessage and: [
+					 dastInterpreter currentNode selector = #+ and: [
+							 dastInterpreter currentNode arguments last isLiteralNode and: [
+									 dastInterpreter currentNode arguments last value = 3 ] ] ])
+				not ].
+	dastContext := dastInterpreter currentContext.
+
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [
+		| tempNames |
+		tempNames := dastContext allTemps collect: [ :each | each key ].
+		tempNames do: [ :temp |
+			dastTemp := (dastContext findLocalVariable: temp) value.
+			dastTemp isBlock
+				ifFalse: [
+					self
+						assert: ((context lookupTempVar: temp) readInContext: context)
+						identicalTo: dastTemp ]
+				ifTrue: [
+					| contextTemp |
+					contextTemp := (context lookupTempVar: temp) readInContext:
+						               context.
+					self assertFullBlock: contextTemp equalsDASTBlock: dastTemp ] ].
+
+		dastContext := dastContext sender.
+		context := context sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchTempVectorCreation [
+
+	| astScope temp dastTemp vectorSize |
+	self
+		interpreterOnMethodWithTempVector;
+		dastStepUntil: [
+			(dastInterpreter currentNode isMessage and: [
+					 dastInterpreter currentNode selector = #+ and: [
+							 dastInterpreter currentNode arguments last isLiteralNode and: [
+									 dastInterpreter currentNode arguments last value = 3 ] ] ])
+				not ].
+	dastContext := dastInterpreter currentContext.
+
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [ "ir := dastContext ir."
+		astScope := dastContext methodOrBlock nodeAST scope.
+		astScope tempVector ifNotEmpty: [
+			temp := context tempNamed: astScope tempVectorName.
+			self assert: temp isArray.
+			vectorSize := 0.
+			astScope tempVector keysDo: [ :each |
+				vectorSize := vectorSize + 1.
+				dastTemp := dastContext tempNamed: each.
+				dastTemp isBlock
+					ifFalse: [
+					self assert: (temp at: vectorSize) identicalTo: dastTemp ]
+					ifTrue: [
+						self
+							assertFullBlock: (temp at: vectorSize)
+							equalsDASTBlock: dastTemp ] ] ].
+
+		dastContext := dastContext sender.
+		context := context sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchTempVectorProcessResume [
+
+	| process |
+	self
+		interpreterOnMethodWithTempVector;
+		dastStepUntil: [
+			(dastInterpreter currentNode isMessage and: [
+					 dastInterpreter currentNode selector = #+ and: [
+							 dastInterpreter currentNode arguments last isLiteralNode and: [
+									 dastInterpreter currentNode arguments last value = 3 ] ] ])
+				not ].
+	dastContext := dastInterpreter currentContext.
+
+	context := dastContext asContext.
+
+	process := Process
+		           forContext: context
+		           priority: Processor userInterruptPriority.
+
+	[ dastContext isRoot ] whileFalse: [
+		context := context sender.
+		dastContext := dastContext sender ].
+
+	process completeTo: context.
+
+	self assert: process suspendedContext top equals: 9.
+
+	self deny: process isTerminated.
+
+	self shouldnt: [ process resume ] raise: Exception.
+
+	self assert: process isTerminated
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testBytecodeSwitchTempVectorStack [
+
+	| stack dastElement contextElement |
+	self
+		interpreterOnMethodWithTempVector;
+		dastStepUntil: [
+			(dastInterpreter currentNode isMessage and: [
+					 dastInterpreter currentNode selector = #+ and: [
+							 dastInterpreter currentNode arguments last isLiteralNode and: [
+									 dastInterpreter currentNode arguments last value = 3 ] ] ])
+				not ].
+	dastContext := dastInterpreter currentContext.
+
+	context := dastContext asContext.
+
+	[ dastContext isRoot ] whileFalse: [
+		stack := dastContext stack.
+
+		self
+			assert: context stackPtr
+			equals: dastContext ir tempMap size + stack size.
+		self assert: dastContext ir tempMap size equals: context numTemps.
+		(Interval from: 1 to: stack size) do: [ :index |
+			dastElement := dastContext stack at: index.
+			contextElement := context at: context numTemps + index.
+			dastElement isBlock
+				ifFalse: [ self assert: contextElement identicalTo: dastElement ]
+				ifTrue: [
+				self assertFullBlock: contextElement equalsDASTBlock: dastElement ] ].
+		(Interval from: 1 to: dastContext ir tempMap size) do: [ :index |
+			| variableNames |
+			variableNames := (dastContext ir tempMap associations sorted: [
+				                  :assoc1
+				                  :assoc2 | assoc1 value <= assoc2 value ])
+				                 collect: [ :each | each key ].
+			contextElement := context at: index.
+			(variableNames at: index) = (dastContext allTemps at: index) key
+				ifTrue: [
+					dastElement := (dastContext tempNamed:
+						                (dastContext allTemps at: index) key) value.
+					dastElement isBlock
+						ifFalse: [ self assert: contextElement identicalTo: dastElement ]
+						ifTrue: [
+						self
+							assertFullBlock: contextElement
+							equalsDASTBlock: dastElement ] ]
+				ifFalse: [
+					| astScope |
+					astScope := context compiledCode ast scope.
+					self assert: contextElement isArray.
+					astScope tempVectorName = (variableNames at: index)
+						ifTrue: [
+							astScope tempVectorVarNames withIndexDo: [ :each :indexVector |
+								dastElement := (dastContext tempNamed: each) value.
+								dastElement isBlock
+									ifFalse: [
+										self
+											assert: (contextElement at: indexVector)
+											identicalTo: dastElement ]
+									ifTrue: [
+										self
+											assertFullBlock: (contextElement at: indexVector)
+											equalsDASTBlock: dastElement ] ] ]
+						ifFalse: [
+							self
+								assert: contextElement
+								identicalTo:
+								(context sender tempNamed: (variableNames at: index)) ] ] ].
+
+		dastContext := dastContext sender.
+		context := context sender ]
+]
+
+{ #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchCurrentNodeIsLastExecutedNode [
 
 	| node |
@@ -391,6 +620,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiver [
 
 { #category : #tests }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
+	"Tests fail because we NEED, in some way, to have an outer context. I need either to put the dead pharo context again OR to transform this dead context to a DAST context"
 
 	4 timesRepeat: [ context := context step ].
 	dastContext := context asDASTContextInterpretedBy:
@@ -522,6 +752,130 @@ DASTContextSwitchTests >> testInterpreterSwitchStepIsCorrect [
 	self assert: dastContext nodes top isReturn.
 	self assert: dastContext canExecute.
 	self assert: interpreter currentContext identicalTo: dastContext
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchTempVectorBindings [
+
+	| dastTemp |
+	self
+		contextOnMethodWithTempVector;
+		bcStepUntil: [
+			| node |
+			node := context compiledCode ast sourceNodeForPC: context pc.
+			(node isMessage and: [
+					 node selector = #+ and: [
+							 node arguments last isLiteralNode and: [
+									 node arguments last value = 3 ] ] ]) not ].
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	[ dastContext isRoot ] whileFalse: [
+		| tempNames |
+		tempNames := dastContext allTemps collect: [ :each | each key ].
+		tempNames do: [ :temp |
+			dastTemp := (dastContext findLocalVariable: temp) value.
+			dastTemp isBlock
+				ifFalse: [
+					self
+						assert: ((context lookupTempVar: temp) readInContext: context)
+						identicalTo: dastTemp ]
+				ifTrue: [
+					| contextTemp |
+					contextTemp := (context lookupTempVar: temp) readInContext:
+						               context.
+					self assertFullBlock: contextTemp equalsDASTBlock: dastTemp ] ].
+
+		dastContext := dastContext sender.
+		context := context sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchTempVectorEvaluateAfterSwitch [
+
+	| interpreter |
+	self
+		contextOnMethodWithTempVector;
+		bcStepUntil: [
+			| node |
+			node := context compiledCode ast sourceNodeForPC: context pc.
+			(node isMessage and: [
+					 node selector = #+ and: [
+							 node arguments last isLiteralNode and: [
+									 node arguments last value = 3 ] ] ]) not ].
+	interpreter := DASTInterpreter new.
+	dastContext := context asDASTContextInterpretedBy: interpreter.
+	interpreter initializeWithContext: dastContext.
+
+	self assert: interpreter evaluate equals: 9
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchTempVectorFlatting [
+
+	| astScope temp dastTemp vectorSize |
+	self
+		contextOnMethodWithTempVector;
+		bcStepUntil: [
+			| node |
+			node := context compiledCode ast sourceNodeForPC: context pc.
+			(node isMessage and: [
+					 node selector = #+ and: [
+							 node arguments last isLiteralNode and: [
+									 node arguments last value = 3 ] ] ]) not ].
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	[ dastContext isRoot ] whileFalse: [
+		astScope := dastContext methodOrBlock nodeAST scope.
+		astScope tempVector ifNotEmpty: [
+			temp := context tempNamed: astScope tempVectorName.
+			self assert: temp isArray.
+			vectorSize := 0.
+			astScope tempVector keysDo: [ :each |
+				vectorSize := vectorSize + 1.
+				dastTemp := dastContext tempNamed: each.
+				dastTemp isBlock
+					ifFalse: [
+					self assert: (temp at: vectorSize) identicalTo: dastTemp ]
+					ifTrue: [
+						self
+							assertFullBlock: (temp at: vectorSize)
+							equalsDASTBlock: dastTemp ] ] ].
+
+		dastContext := dastContext sender.
+		context := context sender ]
+]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testInterpreterSwitchTempVectorStack [
+
+	| stack dastElement contextElement |
+	self
+		contextOnMethodWithTempVector;
+		bcStepUntil: [
+			| node |
+			node := context compiledCode ast sourceNodeForPC: context pc.
+			(node isMessage and: [
+					 node selector = #+ and: [
+							 node arguments last isLiteralNode and: [
+									 node arguments last value = 3 ] ] ]) not ].
+	dastContext := context asDASTContextInterpretedBy:
+		               DASTInterpreter new.
+
+	[ dastContext isRoot ] whileFalse: [
+		stack := dastContext stack.
+
+		(Interval from: 1 to: stack size) do: [ :index |
+			dastElement := dastContext stack at: index.
+			contextElement := context at: context numTemps + index.
+			dastElement isBlock
+				ifFalse: [ self assert: contextElement identicalTo: dastElement ]
+				ifTrue: [
+				self assertFullBlock: contextElement equalsDASTBlock: dastElement ] ].
+
+		dastContext := dastContext sender.
+		context := context sender ]
 ]
 
 { #category : #tests }
