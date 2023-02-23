@@ -39,8 +39,8 @@ DASTDebugger class >> defaultDebuggerRank [
 { #category : #debugging }
 DASTDebugger class >> handlesDebugSession: aDebugSession [
 
-	^ (super handlesDebugSession: aDebugSession) and: [
-		  aDebugSession exception class == DASTException ]
+	^ aDebugSession exception class = DASTException or: [
+		  aDebugSession interruptedContext receiver class = DASTBreakpoint ]
 ]
 
 { #category : #initialization }
