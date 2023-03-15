@@ -909,3 +909,24 @@ DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPCRec
 		context := context sender.
 		dastContext := dastContext sender ]
 ]
+
+{ #category : #tests }
+DASTContextSwitchTests >> testOptimizedIfsBcToDAST [
+
+	| interpreter |
+	context := [
+	           | a |
+	           a := 0.
+	           1 = 2
+		           ifFalse: [ a := a + 1 ]
+		           ifTrue: [ a := a + 2 ].
+	           a ] asContext.
+
+	4 timesRepeat: [ context := context step; stepToSendOrReturn ].
+
+	interpreter := DASTInterpreter new.
+	dastContext := context asDASTContextInterpretedBy: interpreter.
+	interpreter initializeWithContext: dastContext.
+
+	self assert: interpreter evaluate equals: 1
+]
