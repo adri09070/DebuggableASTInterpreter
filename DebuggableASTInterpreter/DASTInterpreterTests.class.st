@@ -146,7 +146,7 @@ DASTInterpreterTests >> testEnsure [
 { #category : #tests }
 DASTInterpreterTests >> testEvaluateArgumentOrder [ 
 	
-	self assert: (self evaluateProgram: 'Array braceWith: 1 with: 2' ) 
+	self assert: (self evaluateProgram: 'Array with: 1 with: 2' ) 
 		  equals: #(1 2)
 ]
 
