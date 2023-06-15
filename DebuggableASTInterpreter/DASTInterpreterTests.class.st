@@ -261,8 +261,13 @@ DASTInterpreterTests >> testFalse [
 
 { #category : #'tests-variables-class' }
 DASTInterpreterTests >> testGetClassVariableFromMethodInInstanceSide [
-	self assert: (self evaluateProgram: 'DASTInterpreterClassForTests3 new getClassVariable' ) 
-		  equals: 42
+
+	| value |
+	value := DASTInterpreterClassForTests3 new getClassVariable.
+	self
+		assert: (self evaluateProgram:
+				 'DASTInterpreterClassForTests3 new getClassVariable')
+		equals: value
 		
 
 ]
