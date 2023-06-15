@@ -778,10 +778,12 @@ DASTInterpreterTests >> testSendMessageToBlock [
 { #category : #'tests-variables-class' }
 DASTInterpreterTests >> testSetAndGetClassVariableFromMethodInInstanceSide [
 	"ToDo: reimplement when the environment contains representation of objects"
-	self assert: (self evaluateProgram: 'DASTInterpreterClassForTests3 new setClassVariable. DASTInterpreterClassForTests3 new getClassVariable' ) 
-		  equals: 42
-		
 
+	DASTInterpreterClassForTests3 new setClassVariableToNil.
+	self
+		assert: (self evaluateProgram:
+				 'DASTInterpreterClassForTests3 new setClassVariable. DASTInterpreterClassForTests3 new getClassVariable')
+		equals: 42
 ]
 
 { #category : #'tests-variables-class' }

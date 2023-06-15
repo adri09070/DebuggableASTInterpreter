@@ -38,3 +38,8 @@ DASTInterpreterClassForTests3 >> initialize [
 DASTInterpreterClassForTests3 >> setClassVariable [
 	classVar := 42
 ]
+
+{ #category : #initialization }
+DASTInterpreterClassForTests3 >> setClassVariableToNil [
+	classVar := nil
+]
