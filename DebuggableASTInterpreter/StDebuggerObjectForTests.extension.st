@@ -1,6 +1,6 @@
-Extension { #name : #StDebuggerObjectForTests }
+Extension { #name : 'StDebuggerObjectForTests' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 StDebuggerObjectForTests >> methodWithTempsAssignments [
 
 	| a b |

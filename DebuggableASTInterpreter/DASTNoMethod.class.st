@@ -1,16 +1,18 @@
 Class {
-	#name : #DASTNoMethod,
-	#superclass : #DASTMethod,
-	#category : #'DebuggableASTInterpreter-Closures'
+	#name : 'DASTNoMethod',
+	#superclass : 'DASTMethod',
+	#category : 'DebuggableASTInterpreter-Closures',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Closures'
 }
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTNoMethod >> isNoMethod [
 
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTNoMethod >> nodeAST: aRBNode [
 
 	super nodeAST: aRBNode.

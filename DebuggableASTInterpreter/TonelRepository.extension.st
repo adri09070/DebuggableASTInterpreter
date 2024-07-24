@@ -1,6 +1,6 @@
-Extension { #name : #TonelRepository }
+Extension { #name : 'TonelRepository' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 TonelRepository >> asRing2EnvironmentWith: packageNames [
 
 	| aRG2Environment |

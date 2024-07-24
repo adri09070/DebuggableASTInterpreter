@@ -1,10 +1,12 @@
 Class {
-	#name : #DASTDebuggerInterpreterTests,
-	#superclass : #DASTAbstractInterpreterTests,
-	#category : #'DebuggableASTInterpreter-Tests'
+	#name : 'DASTDebuggerInterpreterTests',
+	#superclass : 'DASTAbstractInterpreterTests',
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testFirstNodeToEvaluateInASum [
 	interpreter initializeWithProgram: (RBParser parseExpression: '1 + 1').
 	
@@ -12,7 +14,7 @@ DASTDebuggerInterpreterTests >> testFirstNodeToEvaluateInASum [
 	
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testStepAfterTheEndOfProgramExcecutionThrowsAnException [
 
 	interpreter initializeWithProgram: (RBParser parseExpression: '1').
@@ -23,14 +25,14 @@ DASTDebuggerInterpreterTests >> testStepAfterTheEndOfProgramExcecutionThrowsAnEx
 	self should: [ interpreter stepOver ] raise: DASTEvaluationTerminated
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testStepInto [
 	interpreter initializeWithProgram: (RBParser parseExpression: '1+2').
 	self assert: (interpreter stepInto; stackTop) equals: 1.
 	self assert: (interpreter stepInto; stackTop) equals: 2.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testStepIntoBlock [
 	interpreter initializeWithProgram: (RBParser parseExpression: '[1+3] value').
 	self assert: (interpreter stepInto; stackTop) class equals: DASTBlock .
@@ -41,7 +43,7 @@ DASTDebuggerInterpreterTests >> testStepIntoBlock [
 	self assert: (interpreter stepInto; stackTop) equals: 4.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testStepIntoMethod [
 	interpreter initializeWithProgram: (RBParser parseExpression: '2 raisedTo: 3').
 	self assert: (interpreter stepInto; stackTop) equals: 2.
@@ -50,14 +52,14 @@ DASTDebuggerInterpreterTests >> testStepIntoMethod [
 	self assert: (interpreter stepInto; stackTop) equals: 3.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testStepOver [
 	interpreter initializeWithProgram: (RBParser parseExpression: '1+2').
 	self assert: (interpreter stepOver; stackTop) equals: 1.
 	self assert: (interpreter stepOver; stackTop) equals: 2.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testStepOverBlock [
 	interpreter initializeWithProgram: (RBParser parseExpression: '[1+3] value').
 	self assert: (interpreter stepOver; stackTop) class equals: DASTBlock .
@@ -66,7 +68,7 @@ DASTDebuggerInterpreterTests >> testStepOverBlock [
 	
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTDebuggerInterpreterTests >> testStepOverMethod [
 	interpreter initializeWithProgram: (RBParser parseExpression: '2 raisedTo: 3').
 	self assert: (interpreter stepOver; stackTop) equals: 2.

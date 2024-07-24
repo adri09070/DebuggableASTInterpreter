@@ -1,6 +1,6 @@
 Class {
-	#name : #DASTContextTests,
-	#superclass : #TestCase,
+	#name : 'DASTContextTests',
+	#superclass : 'TestCase',
 	#instVars : [
 		'context',
 		'aCompiledMethod',
@@ -16,10 +16,12 @@ Class {
 		'interpreterBlock',
 		'blockContext'
 	],
-	#category : #'DebuggableASTInterpreter-Tests'
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }
 
-{ #category : #running }
+{ #category : 'running' }
 DASTContextTests >> setUp [
 
 	super setUp.
@@ -66,13 +68,13 @@ DASTContextTests >> setUp [
 	blockContext := interpreterBlock currentContext
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testContextInitialization [
 	context := DASTContext new.
 	self assert: context executedNodes isEmpty
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTBlockContextAsContextHasSameResult [
 
 	| bcContext process result |
@@ -93,7 +95,7 @@ DASTContextTests >> testDASTBlockContextAsContextHasSameResult [
 	self shouldnt: [ process resume ] raise: [ Exception ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTBlockContextAsContextKeepsSameEquivalentPc [
 
 	| bcContext nextNode nodes |
@@ -119,7 +121,7 @@ DASTContextTests >> testDASTBlockContextAsContextKeepsSameEquivalentPc [
 		blockContext := blockContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTBlockContextAsContextKeepsSameReceiverSenderAndArguments [
 
 	| arguments receiver bcContext bcMethod dastMethod |
@@ -143,7 +145,7 @@ DASTContextTests >> testDASTBlockContextAsContextKeepsSameReceiverSenderAndArgum
 	self assert: blockContext isRoot
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTBlockContextAsContextKeepsSameStack [
 
 	| bcContext stack |
@@ -167,7 +169,7 @@ DASTContextTests >> testDASTBlockContextAsContextKeepsSameStack [
 		blockContext := blockContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTMethodContextAsContextHasSameResult [
 
 	| bcContext process result |
@@ -187,7 +189,7 @@ DASTContextTests >> testDASTMethodContextAsContextHasSameResult [
 	self shouldnt: [ process resume ] raise: [ Exception ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTMethodContextAsContextKeepsSameEquivalentPc [
 
 	| bcContext nextNode nodes |
@@ -212,7 +214,7 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameEquivalentPc [
 		methodContext := methodContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTMethodContextAsContextKeepsSameReceiverSenderAndArguments [
 
 	| arguments receiver bcContext |
@@ -235,7 +237,7 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameReceiverSenderAndArgu
 	self assert: methodContext isRoot
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTMethodContextAsContextKeepsSameStack [
 
 	| bcContext stack |
@@ -258,7 +260,7 @@ DASTContextTests >> testDASTMethodContextAsContextKeepsSameStack [
 		methodContext := methodContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextTests >> testDASTRootContextAsContext [
 
 	| bcContext process |
@@ -274,14 +276,14 @@ DASTContextTests >> testDASTRootContextAsContext [
 	self assert: process isTerminated
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTContextTests >> testStackPopEmpty [
 	| stack |
 	stack := DASTStack new.
 	self should: [ stack pop ] raise: Exception
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTContextTests >> testStackPushPop [
 	| stack |
 	stack := DASTStack new
@@ -292,7 +294,7 @@ DASTContextTests >> testStackPushPop [
 	self assert: stack pop equals: 3.
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTContextTests >> testStackPushTop [
 	| stack |
 	stack := DASTStack new
@@ -305,7 +307,7 @@ DASTContextTests >> testStackPushTop [
 	
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTContextTests >> testStackPushValueLink [
 	| stack |
 	stack := DASTStack new

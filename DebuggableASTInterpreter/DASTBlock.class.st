@@ -1,14 +1,16 @@
 Class {
-	#name : #DASTBlock,
-	#superclass : #DASTClosure,
+	#name : 'DASTBlock',
+	#superclass : 'DASTClosure',
 	#instVars : [
 		'interval',
 		'pharoOuterContext'
 	],
-	#category : #'DebuggableASTInterpreter-Closures'
+	#category : 'DebuggableASTInterpreter-Closures',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Closures'
 }
 
-{ #category : #'accessing method dictionary' }
+{ #category : 'accessing method dictionary' }
 DASTBlock class >> lookupSelector: selector [
 	" Hack for accessing method definition of BlockClosure while not inheriting from it"
 	| method |
@@ -20,17 +22,17 @@ DASTBlock class >> lookupSelector: selector [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> basicClass [
 	^ self class
 ]
 
-{ #category : #'source code' }
+{ #category : 'source code' }
 DASTBlock >> bodyOffset [
 	^ self outerContext methodOrBlock bodyOffset
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> closure [
 
 	^ FullBlockClosure new
@@ -45,13 +47,13 @@ DASTBlock >> closure [
 			             evaluate ]"
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> compiledCode [
 
 	^ self nodeAST ir compiledMethod
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> ensure: aBlock [
 	"Evaluate a termination block after evaluating the receiver, regardless of
 	 whether the receiver's evaluation completes.  N.B.  This method is *not*
@@ -68,7 +70,7 @@ DASTBlock >> ensure: aBlock [
 	^ returnValue
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTBlock >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 5>
 
@@ -80,13 +82,13 @@ DASTBlock >> gtInspectorIn: composite [
 		when: [ true ]
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTBlock >> gtInspectorIn: aGLMCompositePresentation highlightInterval: aCollection [ 
 	^ self outerContext methodOrBlock gtInspectorIn: aGLMCompositePresentation highlightInterval: aCollection 
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> initializeInterval [
 	| parent methodClass intervalOffset |
 	parent := self outerContext methodOrBlock.
@@ -95,7 +97,7 @@ DASTBlock >> initializeInterval [
 	interval := (self nodeAST sourceInterval) collect: [:each | each + intervalOffset ].
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> initializeWith: aRBNode [
 	self assert: aRBNode isBlock.
 	(aRBNode body statements isEmpty) ifTrue: [ aRBNode body addNode: (RBLiteralValueNode value: nil) ].
@@ -104,85 +106,85 @@ DASTBlock >> initializeWith: aRBNode [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> interval [
 	^ interval
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> isBlock [ 
 	^true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> isMessageValue [
 	^ false
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> isPrimitive [ 
 	"A block always has code inside, and cannot have a primitive declaration "
 	^ false
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> methodClass [
 	^ self outerContext methodOrBlock methodClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> outerContext [
 	^ outerContext 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> outerContext: aDASTContext [
 	outerContext := aDASTContext.
 	"self initializeInterval"
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> pharoOuterContext [
 
 	^ pharoOuterContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> pharoOuterContext: anObject [
 
 	pharoOuterContext := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> primitive [ 
 	"A block always has code inside, and cannot have a primitive declaration "
 	^ 0
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTBlock >> printOn: aStream [
 	aStream nextPutAll: self nodeAST source asString
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> selector [
 	 
 	^ 'value' "nodeAST sourceCode"
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTBlock >> sourceCodeInMethod [
 	^ self nodeAST source asString
 	
 ]
 
-{ #category : #'source code' }
+{ #category : 'source code' }
 DASTBlock >> sourceCodeWithClassAndSelector [
 	^ self outerContext methodOrBlock sourceCodeWithClassAndSelector
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTBlock >> value1: anArg [
 	| block |
 	block := Smalltalk compiler

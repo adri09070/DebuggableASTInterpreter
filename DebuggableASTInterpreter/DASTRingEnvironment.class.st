@@ -1,6 +1,6 @@
 Class {
-	#name : #DASTRingEnvironment,
-	#superclass : #DASTEnvironment,
+	#name : 'DASTRingEnvironment',
+	#superclass : 'DASTEnvironment',
 	#instVars : [
 		'ringEnvironment'
 	],
@@ -9,10 +9,12 @@ Class {
 		'cachedPackagesNames',
 		'cachedPath'
 	],
-	#category : #'DebuggableASTInterpreter-Environments'
+	#category : 'DebuggableASTInterpreter-Environments',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Environments'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTRingEnvironment >> initializeWithRepositoryLocatedIn: pathString withPackages: packagesNames [ 
 	| repository |
 	

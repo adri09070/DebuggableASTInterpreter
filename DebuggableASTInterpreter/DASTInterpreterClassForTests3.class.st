@@ -1,6 +1,6 @@
 Class {
-	#name : #DASTInterpreterClassForTests3,
-	#superclass : #Object,
+	#name : 'DASTInterpreterClassForTests3',
+	#superclass : 'Object',
 	#instVars : [
 		'x'
 	],
@@ -10,31 +10,33 @@ Class {
 	#classInstVars : [
 		'ivClassSide'
 	],
-	#category : #'DebuggableASTInterpreter-TestsClasses'
+	#category : 'DebuggableASTInterpreter-TestsClasses',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'TestsClasses'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreterClassForTests3 >> evaluateBlock [
 	^self evaluateBlock: [ x ]
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreterClassForTests3 >> evaluateBlock: aBlock [
 	^DASTInterpreterClassForTests2 new evaluateBlock: aBlock
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreterClassForTests3 >> getClassVariable [
 	^ classVar
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreterClassForTests3 >> initialize [
 	super initialize.
 	x := 123
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreterClassForTests3 >> setClassVariable [
 	classVar := 42
 ]

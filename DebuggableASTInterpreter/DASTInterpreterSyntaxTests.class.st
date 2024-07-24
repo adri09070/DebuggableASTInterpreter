@@ -1,5 +1,7 @@
 Class {
-	#name : #DASTInterpreterSyntaxTests,
-	#superclass : #TestCase,
-	#category : #'DebuggableASTInterpreter-Tests'
+	#name : 'DASTInterpreterSyntaxTests',
+	#superclass : 'TestCase',
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }

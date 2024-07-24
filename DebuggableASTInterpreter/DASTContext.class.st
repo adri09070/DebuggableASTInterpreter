@@ -3,8 +3,8 @@ I store variables and its values. I also contain a reference to my parent and se
 My method find: looks for a variable in myself and up in my parent contexts chain.
 "
 Class {
-	#name : #DASTContext,
-	#superclass : #Object,
+	#name : 'DASTContext',
+	#superclass : 'Object',
 	#instVars : [
 		'variablesDict',
 		'receiver',
@@ -26,16 +26,18 @@ Class {
 		'BcToDASTContextMap',
 		'valueToBlockMessages'
 	],
-	#category : #'DebuggableASTInterpreter-Contexts'
+	#category : 'DebuggableASTInterpreter-Contexts',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Contexts'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DASTContext class >> bcToDASTContextMap [
 
 	^ BcToDASTContextMap ifNil: [ BcToDASTContextMap := WeakIdentityKeyDictionary new ]
 ]
 
-{ #category : #instantiation }
+{ #category : 'instantiation' }
 DASTContext class >> newNoMethodContextWithProgram: aRBNode temps: aCollection evaluator: anEvaluator [
 	"special context for the first call"
 
@@ -63,7 +65,7 @@ DASTContext class >> newNoMethodContextWithProgram: aRBNode temps: aCollection e
 		  yourself
 ]
 
-{ #category : #instantiation }
+{ #category : 'instantiation' }
 DASTContext class >> newWithSender: aDASTContext receiver: aReceiver messageNode: aRBMessageNode evaluator: aDASTEvaluator [ 
 	| context |
 	context := ((aDASTEvaluator isEPDASTBlockMirror: aReceiver ) 
@@ -78,7 +80,7 @@ DASTContext class >> newWithSender: aDASTContext receiver: aReceiver messageNode
 	^ context initializeContext
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DASTContext class >> valueToBlockMessages [
 
 	^ valueToBlockMessages ifNil: [ 
@@ -90,30 +92,30 @@ DASTContext class >> valueToBlockMessages [
 		                             #valueWithArguments ) ]
 ]
 
-{ #category : #'accessing variables' }
+{ #category : 'accessing variables' }
 DASTContext >> allInstVars [
 	self subclassResponsibility 
 ]
 
-{ #category : #'accessing variables' }
+{ #category : 'accessing variables' }
 DASTContext >> allInternVars [
 	^ {('receiver' -> self receiver) . 
 	   ('sender'   -> self sender) }
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> allTemps [
 	self subclassResponsibility 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> arguments [
 
 	^ (self methodOrBlock nodeAST arguments collect: [ :each | each name ]) 
 		  collect: [ :each | (self findLocalVariable: each) value ]
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 DASTContext >> asContext [
 
 	| newContext nextNode nextPC nextNodes |
@@ -132,7 +134,7 @@ DASTContext >> asContext [
 	^ newContext
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContext >> assignVariable: name value: value [
 	"Temporary variables assignment"
 	(self lookupContextDefiningLocalVariable: name)
@@ -156,7 +158,7 @@ DASTContext >> assignVariable: name value: value [
 	
 ]
 
-{ #category : #'API-store' }
+{ #category : 'API-store' }
 DASTContext >> at: aByteSymbol put: anObject [
 	self setIndexForTempVarNamed: aByteSymbol.
 	^self variablesDict at: aByteSymbol put: anObject.
@@ -164,7 +166,7 @@ DASTContext >> at: aByteSymbol put: anObject [
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DASTContext >> bcValueForAnObject: anObject forContext: newContext [
 
 	| bcValue |
@@ -175,12 +177,12 @@ DASTContext >> bcValueForAnObject: anObject forContext: newContext [
 	^ bcValue
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContext >> canExecute [
 	^ self nodes isNotEmpty and: [ self unhandledException isNil ]
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTContext >> codeHighlightRange [
 	| nodeHighlight |
 	self nodes ifEmpty: [ ^ 1 to: 1 ].
@@ -190,28 +192,28 @@ DASTContext >> codeHighlightRange [
 	^ nodeHighlight debugHighlightRange + self methodOrBlock bodyOffset 
 ]
 
-{ #category : #'closure support' }
+{ #category : 'closure support' }
 DASTContext >> contextTag [
 	^ self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> currentNode [
 	^ currentNode ifNil: [ currentNode := self nodes pop ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> currentNode: anObject [
 	currentNode := anObject
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> definesLocalVariableNamed: aName [
 	"Return true if the context defines the local variable"
 	^ self variablesDict keys includes: aName
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> evaluateSignal: exception [
 	"The following primitive is just a marker used to find the evaluation context. 
 	See MethodContext>>#isHandlerOrSignalingContext. "
@@ -223,17 +225,17 @@ DASTContext >> evaluateSignal: exception [
 	self return: value
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> evaluator [
 	^ evaluator
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DASTContext >> evaluator: aDASTEvaluator [ 
 	evaluator := aDASTEvaluator.
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> exception [
 	"handlercontext only. access temporaries from BlockClosure>>#on:do:"
 	self flag: 'Access from temps'.
@@ -241,7 +243,7 @@ DASTContext >> exception [
 
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> exceptionClass [
 	"handlercontext only. access temporaries from BlockClosure>>#on:do:"
 	self flag: 'Access from temps'.
@@ -249,7 +251,7 @@ DASTContext >> exceptionClass [
 
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> exceptionHandlerBlock [
 	"handlercontext only. access temporaries from BlockClosure>>#on:do:"
 	self flag: 'Access from temps'.
@@ -257,18 +259,18 @@ DASTContext >> exceptionHandlerBlock [
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> executedNodes [
 	^executedNodes ifNil:[executedNodes := DASTStack new]
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContext >> findClassVariable: aName [
 	^ self evaluator findClassVariable: aName inObjectAndItsParents: self receiver
 	
 ]
 
-{ #category : #query }
+{ #category : 'query' }
 DASTContext >> findContextSuchThat: testBlock [
 	"Search self and my sender chain for first one that satisfies testBlock.  Return nil if none satisfy"
 
@@ -281,13 +283,13 @@ DASTContext >> findContextSuchThat: testBlock [
 	^ nil
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContext >> findGlobalVariable: aByteSymbol [
 	
 	^ self evaluator findGlobalVariable: aByteSymbol
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContext >> findInstanceVariable: aName [
 	| val |
 	val := self evaluator findInstanceVariable: aName inObject: self receiver.
@@ -295,12 +297,12 @@ DASTContext >> findInstanceVariable: aName [
 	^ aName -> val
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContext >> findLocalVariable: aName [
 	self subclassResponsibility 
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> findNextHandlerContext [
 	"Return the next handler marked context, returning nil if there is none.  Search starts with self and proceeds up to nil."
 
@@ -316,7 +318,7 @@ DASTContext >> findNextHandlerContext [
 	^ context exception privHandlerContext nextHandlerContext
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> findNextHandlerOrSignalingContext [
 	"Return the next handler/signaling marked context, answering nil if there is none. 
 	Search starts with self and proceeds up to nil."
@@ -331,7 +333,7 @@ DASTContext >> findNextHandlerOrSignalingContext [
 	^ nil
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> findNextUnwindContextUpTo: aContext [
 	"Return the next unwind marked above the receiver, returning nil if there is none.  Search proceeds up to but not including aContext."
 
@@ -347,7 +349,7 @@ DASTContext >> findNextUnwindContextUpTo: aContext [
 	^nil
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContext >> findVariable: aByteSymbol [
 	"Return the value of a variable. If this context redefines a variable defined by its parent context, this method will return the variable value for this context"
 	
@@ -373,7 +375,7 @@ DASTContext >> findVariable: aByteSymbol [
 			ifNotNil: [ :pc | pc findVariable: aByteSymbol ]"
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> getClassForLookup [
 
 	 ^ messageNode isSuperSend 
@@ -381,7 +383,7 @@ DASTContext >> getClassForLookup [
 			ifFalse: [self evaluator classOf: receiver]
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTContext >> gtInspectorSendersIn: composite [
 	<gtInspectorPresentationOrder: 30>
 	^composite tree
@@ -391,7 +393,7 @@ DASTContext >> gtInspectorSendersIn: composite [
 		children: [ :each | each senders ]
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTContext >> gtInspectorSourceIn: composite [
 	<gtInspectorPresentationOrder: 0> 
 	| highlightRange |
@@ -407,7 +409,7 @@ DASTContext >> gtInspectorSourceIn: composite [
 		highlightInterval: highlightRange)
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTContext >> gtInspectorVarsIn: composite [
 	<gtInspectorPresentationOrder: 1> 
 	
@@ -448,7 +450,7 @@ DASTContext >> gtInspectorVarsIn: composite [
 				ifFalse: [ self halt. selection collect: [ :each | each at: 3 ] ] ]]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> handleSignal: exception [
 	"Sent to handler (on:do:) contexts only.  If my exception class (first arg) handles exception then execute my handle block (second arg), otherwise forward this message to the next handler context.  If none left, execute exception's defaultAction (see nil>>handleSignal:)."
 	(self exceptionClass handles: exception)
@@ -456,7 +458,7 @@ DASTContext >> handleSignal: exception [
 	^ self evaluateSignal: exception
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> hasSender: context [ 
 	"Answer whether the receiver is strictly above context on the stack."
 
@@ -472,7 +474,7 @@ DASTContext >> hasSender: context [
 	^false
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTContext >> initialize [
 
 	super initialize.
@@ -485,70 +487,70 @@ DASTContext >> initialize [
 	tempVarIndex := 0
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DASTContext >> ir [
 
 	self subclassResponsibility
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContext >> isBlockContext [
 
 	self subclassResponsibility 
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContext >> isCurrentContext [
 	^ self evaluator interpreter currentContext = self
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContext >> isDead [
 
 	^ isDead ifNil: [ isDead := false ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> isDead: aBool [
 
 	isDead := aBool
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContext >> isEmpty [
 	
 	^ variablesDict isEmpty.
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> isHandlerContext [
 	"is this context for #on:do:?"
 	^self isHandlerOrSignalingContext and: [ self selector == #on:do: ]
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> isHandlerOrSignalingContext [
 	"Both BlockClosure>>on:do: (handler) and Context>>evaluateSignal: (signaling) 
 	are marked with primitive 199."
 	^((self isBlockContext) or: [ self isRoot ]) not and:  [closure primitive = 199]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContext >> isNoMethod [
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContext >> isRoot [ 
 	^false
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> isUnwindContext [
 	^ self subclassResponsibility 
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> lookupContextDefiningLocalVariable: aByteSymbol [
 	
 	(self definesLocalVariableNamed: aByteSymbol) ifTrue: [ ^ self ].
@@ -558,7 +560,7 @@ DASTContext >> lookupContextDefiningLocalVariable: aByteSymbol [
 		ifFalse: [ ^ nil ]
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContext >> lookupSelector: aByteString startInClass: aClass [ 
 	| lclass |
 	"(aByteString = #signal) ifTrue: [ self halt. ]."
@@ -573,22 +575,22 @@ DASTContext >> lookupSelector: aByteString startInClass: aClass [
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> messageNode [
 	^ messageNode
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> messageNode: aRBMessageNode [ 
 	messageNode := aRBMessageNode
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> methodClass [
 	^ self methodOrBlock methodClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> methodContext [
 
 	^ self isBlockContext
@@ -596,51 +598,51 @@ DASTContext >> methodContext [
 		  ifFalse: [ self ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> methodOrBlock [
 	^ closure
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> methodOrBlock: aDASTClosure [
 
 	closure := aDASTClosure
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> nextHandlerContext [
 
 	^ self sender findNextHandlerContext
 ]
 
-{ #category : #'accessing-environment' }
+{ #category : 'accessing-environment' }
 DASTContext >> nilObject [
 	^ self evaluator nilObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> nodes [ 
 	^nodes ifNil: [ nodes := DASTStack new ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> nodes: aStack [ 
 	nodes := aStack
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> parent [
 	" This context is used for performing the lookup operations "
 	^ parent
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> parent: aDASTContext [
 	" This context is used for performing the lookup operations "
 	parent := aDASTContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> printOn: aStream [
 	aStream
 		cr;
@@ -653,7 +655,7 @@ DASTContext >> printOn: aStream [
 		
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 DASTContext >> privAsContext [
 
 	^ (Context newForMethod: self method)
@@ -664,7 +666,7 @@ DASTContext >> privAsContext [
 		  startpc: self methodOrBlock compiledCode initialPC
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 DASTContext >> privCopyStackInContext: newContext [
 
 	newContext stackp: 0.
@@ -708,22 +710,22 @@ DASTContext >> privCopyStackInContext: newContext [
 			(self bcValueForAnObject: each forContext: newContext) ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> receiver [
 	^ receiver
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> receiver: anObject [
 	receiver := anObject
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> resume: value [
 	self resume: value through: (thisContext findNextUnwindContextUpTo: self)
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> resume: value through: firstUnwindContext [
 	"Unwind thisContext to self and resume with value as result of last send.
 	 Execute any unwind blocks while unwinding.
@@ -745,42 +747,42 @@ DASTContext >> resume: value through: firstUnwindContext [
 
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> return: value [
 	sender resume: value
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> returnContext [ 
 	^self isBlockContext 
 		ifTrue: [ ^ parent returnContext ]
 		ifFalse: [ ^ sender  ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> rootContext [
 	self sender ifNil: [ ^ self ].
 	
 	^ self sender rootContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> selector [
 
 	^closure selector ifNil: [closure defaultSelector].
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> sender [
 	^ sender 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> sender: aDASTContext [
 	sender := aDASTContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> senders [
 	| context result |
 	context := self sender.
@@ -792,14 +794,14 @@ DASTContext >> senders [
 	^ result
 ]
 
-{ #category : #'API-store' }
+{ #category : 'API-store' }
 DASTContext >> setIndexForTempVarNamed: tempVarName [
 	tempVarsNamesIndexes
 		at: tempVarName
 		ifAbsentPut: [ tempVarIndex := tempVarIndex + 1 ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> setTemporalVariablesNamed: names values: values [
 	values doWithIndex: 
 		  [ :val :index | 
@@ -808,32 +810,32 @@ DASTContext >> setTemporalVariablesNamed: names values: values [
 					 put: val ].
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTContext >> sourceCode [
 	^ self methodOrBlock sourceCodeWithClassAndSelector 
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> stack [
 	^ stack
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> stack: anObject [
 	stack := anObject
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> tempAt: anIndex [
 	^ self variablesDict at: (self variablesDict keys at: anIndex)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> temps: aCollection [ 
 	aCollection do: [ :assoc | self at: assoc key put: assoc value ]
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> terminate [
 	"Make myself unresumable."
 	nodes removeAll.
@@ -841,7 +843,7 @@ DASTContext >> terminate [
 
 ]
 
-{ #category : #'private-exceptions' }
+{ #category : 'private-exceptions' }
 DASTContext >> terminateTo: previousContext [
 	"Terminate all the Contexts between me and previousContext, if previousContext is on my Context stack. Make previousContext my sender."
 
@@ -856,29 +858,29 @@ DASTContext >> terminateTo: previousContext [
 	sender := previousContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> unhandledException [
 	^ unhandledException
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> unhandledException: anObject [
 	^ unhandledException := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContext >> unwindComplete [
 	"unwindContext only. access temporaries from BlockClosure>>#ensure: and BlockClosure>>#ifCurtailed:"
 	self flag: 'Access temps'.
 	^self tempAt: 2
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContext >> variablesDict [
 	^ variablesDict
 ]
 
-{ #category : #'API-store' }
+{ #category : 'API-store' }
 DASTContext >> write: value toInstVarNamed: name [
 	| index |
 	index := ((self evaluator classOf: self receiver) allInstVarNames indexOf: name).

@@ -1,11 +1,11 @@
-Extension { #name : #CompiledMethod }
+Extension { #name : 'CompiledMethod' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 CompiledMethod >> gtInspectorIn: composite highlightInterval: aCollection [ 
 	self gtInspectorSourceIn: composite 
 ]
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 CompiledMethod >> isKindOfValue [
 	^ (201 to: 206) includes: self primitive 
 ]

@@ -1,6 +1,6 @@
-Extension { #name : #StDebugger }
+Extension { #name : 'StDebugger' }
 
-{ #category : #'*DebuggableASTDebuggerExperiment' }
+{ #category : '*DebuggableASTDebuggerExperiment' }
 StDebugger class >> buildDASTCommandsGroupWith: stDebuggerInstance forRoot: aRootGroup [
 
 	<extensionCommands>
@@ -12,7 +12,7 @@ StDebugger class >> buildDASTCommandsGroupWith: stDebuggerInstance forRoot: aRoo
 	configGroup register: dastConfigGroup
 ]
 
-{ #category : #'*DebuggableASTDebuggerExperiment' }
+{ #category : '*DebuggableASTDebuggerExperiment' }
 StDebugger >> programmaticallyClose [
 
 	programmaticallyClosed := true.

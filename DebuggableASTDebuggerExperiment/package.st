@@ -1,1 +1,1 @@
-Package { #name : #DebuggableASTDebuggerExperiment }
+Package { #name : 'DebuggableASTDebuggerExperiment' }

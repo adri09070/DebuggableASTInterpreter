@@ -1,12 +1,12 @@
-Extension { #name : #StDebuggerConfigurationCommandTreeBuilder }
+Extension { #name : 'StDebuggerConfigurationCommandTreeBuilder' }
 
-{ #category : #'*DebuggableASTDebuggerExperiment' }
+{ #category : '*DebuggableASTDebuggerExperiment' }
 StDebuggerConfigurationCommandTreeBuilder >> dastConfigurationCommandsClasses [
 
 	^ { StSwitchToDASTCommand }
 ]
 
-{ #category : #'*DebuggableASTDebuggerExperiment' }
+{ #category : '*DebuggableASTDebuggerExperiment' }
 StDebuggerConfigurationCommandTreeBuilder >> dastConfigurationCommandsGroup [
 
 	| group |
@@ -20,13 +20,13 @@ StDebuggerConfigurationCommandTreeBuilder >> dastConfigurationCommandsGroup [
 	^ group
 ]
 
-{ #category : #'*DebuggableASTDebuggerExperiment' }
+{ #category : '*DebuggableASTDebuggerExperiment' }
 StDebuggerConfigurationCommandTreeBuilder >> dastConfigurationGroupDescription [
 
 	^ 'Configuration commands to perform actions with DAST interpreter'
 ]
 
-{ #category : #'*DebuggableASTDebuggerExperiment' }
+{ #category : '*DebuggableASTDebuggerExperiment' }
 StDebuggerConfigurationCommandTreeBuilder >> dastConfigurationGroupName [
 
 	^ 'DAST configuration'

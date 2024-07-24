@@ -1,24 +1,26 @@
 Class {
-	#name : #DASTPostOrderTreeVisitorTest,
-	#superclass : #DASTAbstractInterpreterTests,
-	#category : #'DebuggableASTInterpreter-Tests'
+	#name : 'DASTPostOrderTreeVisitorTest',
+	#superclass : 'DASTAbstractInterpreterTests',
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTPostOrderTreeVisitorTest >> assertVisitorStack: visitor equalsStack: expectedStack [
 	self
 		assertCollection: visitor stack asArray
 		equals: (expectedStack collect: [ :e | RBParser parseExpression: e ])
 ]
 
-{ #category : #asserting }
+{ #category : 'asserting' }
 DASTPostOrderTreeVisitorTest >> assertVisitorTop: visitor equals: aString [ 
 
 	self assert: visitor top equals: (RBParser parseExpression: aString).
 
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTPostOrderTreeVisitorTest >> testCascade [
 
 	| ast visitor |
@@ -38,7 +40,7 @@ DASTPostOrderTreeVisitorTest >> testCascade [
 			'^ DASTInterpreterClassForTests5 new m3; m4' }
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTPostOrderTreeVisitorTest >> testMessageWithMoreArguments [
 
 	| returnNode visitor |
@@ -52,7 +54,7 @@ DASTPostOrderTreeVisitorTest >> testMessageWithMoreArguments [
 	self assertVisitorStack: visitor equalsStack: #(x y z q 'z+q' 'x arg1: y arg2: z + q')
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTPostOrderTreeVisitorTest >> testReturnMostLeftNodeInMessageSent [
 
 	| returnNode visitor |
@@ -66,7 +68,7 @@ DASTPostOrderTreeVisitorTest >> testReturnMostLeftNodeInMessageSent [
 	self assertVisitorStack: visitor equalsStack: #('2' '3' '2-3' '1' '(2 - 3) + 1' ' ^ (2 - 3) + 1')
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTPostOrderTreeVisitorTest >> testReturnWithMessageSendStopsInTheReceiver [
 
 	| returnNode visitor |
@@ -80,7 +82,7 @@ DASTPostOrderTreeVisitorTest >> testReturnWithMessageSendStopsInTheReceiver [
 	self assertVisitorStack: visitor equalsStack: #('2' '1' '2+1' ' ^ 2 + 1')
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTPostOrderTreeVisitorTest >> testSequence [
 
 	| returnNode visitor |
@@ -96,7 +98,7 @@ DASTPostOrderTreeVisitorTest >> testSequence [
 	self assertVisitorStack: visitor equalsStack: #('1' 'x := 1' x y z q 'z+q' 'x arg1: y arg2: z + q' 'x := 1. x arg1: y arg2: z + q')
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTPostOrderTreeVisitorTest >> testSimpleReturn [
 
 	| ast visitor |

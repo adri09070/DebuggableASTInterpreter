@@ -6,7 +6,8 @@ bp install.
 StDebuggerObjectForTests new instVar
 "
 Class {
-	#name : #DASTBreakpoint,
-	#superclass : #Breakpoint,
-	#category : #DebuggableASTDebuggerExperiment
+	#name : 'DASTBreakpoint',
+	#superclass : 'BreakDebugPoint',
+	#category : 'DebuggableASTDebuggerExperiment',
+	#package : 'DebuggableASTDebuggerExperiment'
 }

@@ -2,18 +2,20 @@
 I am a context created to evaluate the body of a block
 "
 Class {
-	#name : #DASTBlockContext,
-	#superclass : #DASTContext,
-	#category : #'DebuggableASTInterpreter-Contexts'
+	#name : 'DASTBlockContext',
+	#superclass : 'DASTContext',
+	#category : 'DebuggableASTInterpreter-Contexts',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Contexts'
 }
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTBlockContext >> allInstVars [ 
 	^ closure outerContext allInstVars ,
 	  sender allInstVars
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTBlockContext >> allTemps [
 
 	self flag: 'I really think that this statement duplicates temps'.
@@ -21,18 +23,18 @@ DASTBlockContext >> allTemps [
 	  , sender allTemps
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTBlockContext >> belongsToDoIt [
 	self flag: 'wrong imoplementation, to fix'.
 	^false
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTBlockContext >> contextTag [
 	^ closure outerContext
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTBlockContext >> findLocalVariable: aName [
 	^ variablesDict 
 		associationAt: aName 
@@ -44,7 +46,7 @@ DASTBlockContext >> findLocalVariable: aName [
 		
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTBlockContext >> initializeContext [
 	
 	| visitor |
@@ -64,35 +66,35 @@ DASTBlockContext >> initializeContext [
 	
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DASTBlockContext >> ir [
 
 	^ self methodOrBlock nodeAST ir
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTBlockContext >> isBlockContext [
 	^ true
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTBlockContext >> isUnwindContext [
 	"is this context for  method that is marked?"
 	^ false
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTBlockContext >> method [
 	^ closure outerContext method
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTBlockContext >> printOn: aStream [
 	aStream nextPutAll: closure printString , ' in '.
 			closure outerContext printOn: aStream
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTBlockContext >> receiver [
 	^ closure outerContext receiver
 ]

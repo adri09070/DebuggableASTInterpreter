@@ -2,36 +2,38 @@
 I am a context created to evaluate the body of a method
 "
 Class {
-	#name : #DASTMethodContext,
-	#superclass : #DASTContext,
-	#category : #'DebuggableASTInterpreter-Contexts'
+	#name : 'DASTMethodContext',
+	#superclass : 'DASTContext',
+	#category : 'DebuggableASTInterpreter-Contexts',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Contexts'
 }
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTMethodContext >> allInstVars [ 
 	^ (self evaluator nilObject = receiver) 
 		ifTrue: [ #() ] 
 		ifFalse: [ receiver allInstVars ] 
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTMethodContext >> allTemps [
 	^ self variablesDict associations
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTMethodContext >> arguments [
 
 	^ (self method ast arguments collect: [ :each | each name ]) collect: [ :each | (self findLocalVariable: each) value ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTMethodContext >> belongsToDoIt [
 
 	^ self methodOrBlock isNoMethod
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTMethodContext >> findLocalVariable: aName [
 	^ variablesDict 
 		associationAt: aName 
@@ -39,17 +41,17 @@ DASTMethodContext >> findLocalVariable: aName [
 		
 ]
 
-{ #category : #highlighting }
+{ #category : 'highlighting' }
 DASTMethodContext >> highlightInterval [
 	^ self currentNode debugHighlightRange
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTMethodContext >> icon [
 	^ Smalltalk iconNamed: #smallWarningIcon
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTMethodContext >> initializeContext [
 
 	| theMethod theClassMethodDic aClass aSelector result 
@@ -90,29 +92,29 @@ DASTMethodContext >> initializeContext [
 	
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DASTMethodContext >> ir [
 
 	^ self methodOrBlock nodeAST compiledMethod ir
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTMethodContext >> isBlockContext [ 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTMethodContext >> isEPDASTBlockMirror [
 	^ false
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTMethodContext >> isUnwindContext [
 	"is this context for  method that is marked?"
 	^ closure primitive = 198
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTMethodContext >> printOn: aStream [
 	| selector class mclass  |
 			closure == nil
@@ -134,7 +136,7 @@ DASTMethodContext >> printOn: aStream [
 					(self variablesDict values at: 1) selector printOn: aStream ]
 ]
 
-{ #category : #modifying }
+{ #category : 'modifying' }
 DASTMethodContext >> removePrimitiveFromMethod [
 	
 	self methodOrBlock evaluatePrimitive: false

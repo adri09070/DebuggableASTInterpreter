@@ -1,36 +1,26 @@
 Class {
-	#name : #ClyAddDASTBreakpointCommand,
-	#superclass : #ClyAddStaticBreakpointCommand,
-	#category : #DebuggableASTDebuggerExperiment
+	#name : 'ClyAddDASTBreakpointCommand',
+	#superclass : 'ClyAddBreakPointCommand',
+	#category : 'DebuggableASTDebuggerExperiment',
+	#package : 'DebuggableASTDebuggerExperiment'
 }
 
-{ #category : #testing }
-ClyAddDASTBreakpointCommand class >> canBeExecutedInContext: aBrowserContext [
-
-	^ (super canBeExecutedInContext: aBrowserContext) and: [
-		  aBrowserContext isSelectedItemHasBreakpoint not ]
-]
-
-{ #category : #activation }
+{ #category : 'activation' }
 ClyAddDASTBreakpointCommand class >> contextMenuOrder [
+	"activation"
+
 	<classAnnotationDependency>
-	^1
+	^ 1
 ]
 
-{ #category : #testing }
-ClyAddDASTBreakpointCommand class >> isAbstract [
-	^self = ClyAddBreakpointCommand
-]
-
-{ #category : #accessing }
+{ #category : 'accessing' }
 ClyAddDASTBreakpointCommand >> defaultMenuItemName [
-	^'DAST breakpoint'
+
+	^ 'DAST breakpoint'
 ]
 
-{ #category : #execution }
+{ #category : 'execution' }
 ClyAddDASTBreakpointCommand >> execute [
 
-	| breakpoint |
-	breakpoint := DASTBreakpoint new node: sourceNode.
-	breakpoint install
+	DebugPointManager installNew: DASTBreakpoint on: sourceNode
 ]

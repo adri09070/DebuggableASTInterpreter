@@ -1,10 +1,12 @@
 Class {
-	#name : #DASTStackTests,
-	#superclass : #TestCase,
-	#category : #'DebuggableASTInterpreter-Tests'
+	#name : 'DASTStackTests',
+	#superclass : 'TestCase',
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTStackTests >> testAsArray [
 	| dstack stack |
 	dstack := DASTStack new.

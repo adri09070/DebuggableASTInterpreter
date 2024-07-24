@@ -1,13 +1,15 @@
 Class {
-	#name : #DASTRingEnvironmentTests,
-	#superclass : #TestCase,
+	#name : 'DASTRingEnvironmentTests',
+	#superclass : 'TestCase',
 	#instVars : [
 		'aDASTRingEnvironment'
 	],
-	#category : #'DebuggableASTInterpreter-Tests'
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }
 
-{ #category : #packages }
+{ #category : 'packages' }
 DASTRingEnvironmentTests class >> packagesKernel [
 	^{
 	'FFI-Kernel'.
@@ -51,7 +53,7 @@ DASTRingEnvironmentTests class >> packagesKernel [
 	}
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DASTRingEnvironmentTests >> setUp [
 "	| path packages |
 	path := './src'.
@@ -59,7 +61,7 @@ DASTRingEnvironmentTests >> setUp [
 	aDASTRingEnvironment := DASTRingEnvironment new initializeWithRepositoryLocatedIn: path withPackages: packages"
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DASTRingEnvironmentTests >> testEnvironmentInitialization [
 	self skip.
 	self assert: aDASTRingEnvironment isNotNil 

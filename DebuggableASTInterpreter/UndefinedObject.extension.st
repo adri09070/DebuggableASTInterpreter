@@ -1,6 +1,6 @@
-Extension { #name : #UndefinedObject }
+Extension { #name : 'UndefinedObject' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 UndefinedObject >> asDASTContextInterpretedBy: aDastInterpreter [
 
 	^ DASTContextRootSmalltalk new
@@ -10,7 +10,7 @@ UndefinedObject >> asDASTContextInterpretedBy: aDastInterpreter [
 		  yourself
 ]
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 UndefinedObject >> nodeForCurrentPC [
 	 ^ nil
 ]

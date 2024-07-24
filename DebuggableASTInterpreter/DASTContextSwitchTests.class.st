@@ -1,15 +1,17 @@
 Class {
-	#name : #DASTContextSwitchTests,
-	#superclass : #TestCase,
+	#name : 'DASTContextSwitchTests',
+	#superclass : 'TestCase',
 	#instVars : [
 		'context',
 		'dastInterpreter',
 		'dastContext'
 	],
-	#category : #'DebuggableASTInterpreter-Tests'
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }
 
-{ #category : #'tests - helper' }
+{ #category : 'tests - helper' }
 DASTContextSwitchTests >> assertFullBlock: fullBlock equalsDASTBlock: dastBlock [
 
 	| closure |
@@ -23,13 +25,13 @@ DASTContextSwitchTests >> assertFullBlock: fullBlock equalsDASTBlock: dastBlock 
 		  assert: fullBlock receiver identicalTo: closure receiver
 ]
 
-{ #category : #'tests - helper' }
+{ #category : 'tests - helper' }
 DASTContextSwitchTests >> bcStepUntil: aBlock [
 
 	aBlock whileTrue: [ context := context step ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DASTContextSwitchTests >> contextOnMethodWithTempVector [
 
 	context := [
@@ -50,14 +52,14 @@ DASTContextSwitchTests >> contextOnMethodWithTempVector [
 	           block value + b + a ] asContext
 ]
 
-{ #category : #'tests - helper' }
+{ #category : 'tests - helper' }
 DASTContextSwitchTests >> dastStepUntil: aBlock [
 
 	aBlock whileTrue: [ dastInterpreter stepInto ].
 	dastContext := dastInterpreter currentContext
 ]
 
-{ #category : #'tests - helper' }
+{ #category : 'tests - helper' }
 DASTContextSwitchTests >> interpreterOnMethodWithTempVector [
 
 	dastInterpreter initializeWithProgram:
@@ -70,7 +72,7 @@ DASTContextSwitchTests >> interpreterOnMethodWithTempVector [
 	dastContext := dastInterpreter currentContext
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DASTContextSwitchTests >> setUp [
 
 	| debuggerObjectForTest |
@@ -94,7 +96,7 @@ DASTContextSwitchTests >> setUp [
 	dastContext := dastInterpreter currentContext
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DASTContextSwitchTests >> tearDown [
 	"context terminate."
 
@@ -104,7 +106,7 @@ DASTContextSwitchTests >> tearDown [
 	dastInterpreter := nil
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchBottomContextMapsToRootAndTerminatesProcess [
 
 	| process |
@@ -127,7 +129,7 @@ DASTContextSwitchTests >> testBytecodeSwitchBottomContextMapsToRootAndTerminates
 	self assert: process isTerminated
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchCurrentPcIsFirstPcOfTopNodeOnStack [
 
 	| node |
@@ -143,7 +145,7 @@ DASTContextSwitchTests >> testBytecodeSwitchCurrentPcIsFirstPcOfTopNodeOnStack [
 		(dastContext methodOrBlock nodeAST firstPcForNode: node)
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchCurrentPcIsFirstPcOfTopNodeOnStackRecursively [
 
 	| node |
@@ -163,7 +165,7 @@ DASTContextSwitchTests >> testBytecodeSwitchCurrentPcIsFirstPcOfTopNodeOnStackRe
 		dastContext := dastContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsBindings [
 	"we step after the node `b := 2  ` of StDebuggerObjectForTests>>#methodWithTempsAssignments has been executed"
 
@@ -181,7 +183,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindings [
 		equals: 2
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 	"we step after the node `b := 2  ` of StDebuggerObjectForTests>>#methodWithTempsAssignments has been executed"
 
@@ -210,7 +212,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 		dastContext := dastContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiver [
 
 	4 timesRepeat: [ dastInterpreter stepInto ].
@@ -219,7 +221,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiver [
 	self assert: context receiver identicalTo: dastContext receiver
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiversRecursively [
 
 	4 timesRepeat: [ dastInterpreter stepInto ].
@@ -231,7 +233,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsReceiversRecursively [
 		dastContext := dastContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStack [
 
 	| stack |
@@ -254,7 +256,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStack [
 			identicalTo: (dastContext allTemps at: index) value ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStackRecursively [
 
 	| stack dastElement contextElement |
@@ -288,7 +290,7 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsValueStackRecursively [
 		context := context sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchProcessResume [
 
 	| process |
@@ -313,7 +315,7 @@ DASTContextSwitchTests >> testBytecodeSwitchProcessResume [
 	self assert: process isTerminated
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchReceiverRemainsUnchanged [
 
 	| instVars oldInstVarValues newInstVarValues |
@@ -332,7 +334,7 @@ DASTContextSwitchTests >> testBytecodeSwitchReceiverRemainsUnchanged [
 		self assert: each identicalTo: (newInstVarValues at: index) ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchStepIsCorrect [
 
 	| pc node process |
@@ -363,7 +365,7 @@ DASTContextSwitchTests >> testBytecodeSwitchStepIsCorrect [
 	self assert: process suspendedContext identicalTo: context
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchTempVectorBindings [
 
 	| dastTemp  |
@@ -399,7 +401,7 @@ DASTContextSwitchTests >> testBytecodeSwitchTempVectorBindings [
 		context := context sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchTempVectorCreation [
 
 	| astScope temp dastTemp vectorSize |
@@ -436,7 +438,7 @@ DASTContextSwitchTests >> testBytecodeSwitchTempVectorCreation [
 		context := context sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchTempVectorProcessResume [
 
 	| process |
@@ -471,7 +473,7 @@ DASTContextSwitchTests >> testBytecodeSwitchTempVectorProcessResume [
 	self assert: process isTerminated
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testBytecodeSwitchTempVectorStack [
 
 	| stack dastElement contextElement |
@@ -545,7 +547,7 @@ DASTContextSwitchTests >> testBytecodeSwitchTempVectorStack [
 		context := context sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchCurrentNodeIsLastExecutedNode [
 
 	| node |
@@ -559,7 +561,7 @@ DASTContextSwitchTests >> testInterpreterSwitchCurrentNodeIsLastExecutedNode [
 	self assert: dastContext currentNode identicalTo: node
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchEvaluateAfterSwitchCanFindBindingsOfObjectsDefinedOutsideOfClosuresInContextThatDoesNotHaveDASTEquivalent [
 
 	| debuggerObjectForTest interpreter |
@@ -573,7 +575,7 @@ DASTContextSwitchTests >> testInterpreterSwitchEvaluateAfterSwitchCanFindBinding
 	self assert: interpreter evaluate equals: 42
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsBindings [
 
 	4 timesRepeat: [ context := context step ].
@@ -590,7 +592,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsBindings [
 	self assert: (dastContext findLocalVariable: #b) value equals: 2
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsBindingsRecursively [
 
 	| tempNames |
@@ -608,7 +610,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsBindingsRecursively [
 		dastContext := dastContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiver [
 
 	4 timesRepeat: [ context := context step ].
@@ -618,7 +620,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiver [
 	self assert: context receiver identicalTo: dastContext receiver
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
 	"Tests fail because we NEED, in some way, to have an outer context. I need either to put the dead pharo context again OR to transform this dead context to a DAST context"
 
@@ -632,7 +634,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsReceiversRecursively [
 		dastContext := dastContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStack [
 
 	6 timesRepeat: [ context := context step ].
@@ -648,7 +650,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStack [
 			identicalTo: (context at: context numTemps + index) ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStackRecursively [
 
 	6 timesRepeat: [ context := context step ].
@@ -668,7 +670,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsValueStackRecursively [
 		dastContext := dastContext sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchMessageNodeIsLastSourceNodeExecutedFromSender [
 
 	| node |
@@ -683,7 +685,7 @@ DASTContextSwitchTests >> testInterpreterSwitchMessageNodeIsLastSourceNodeExecut
 	self assert: dastContext messageNode identicalTo: node
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchPutsRootBeforeFirstInterestingContext [
 
 	4 timesRepeat: [ context step ].
@@ -706,7 +708,7 @@ DASTContextSwitchTests >> testInterpreterSwitchPutsRootBeforeFirstInterestingCon
 	self assert: dastContext sender sender isRoot
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchReceiverRemainsUnchanged [
 
 	| instVars oldInstVarValues newInstVarValues |
@@ -726,7 +728,7 @@ DASTContextSwitchTests >> testInterpreterSwitchReceiverRemainsUnchanged [
 		self assert: each identicalTo: (newInstVarValues at: index) ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchStepIsCorrect [
 
 	| pc node interpreter |
@@ -754,7 +756,7 @@ DASTContextSwitchTests >> testInterpreterSwitchStepIsCorrect [
 	self assert: interpreter currentContext identicalTo: dastContext
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchTempVectorBindings [
 
 	| dastTemp |
@@ -790,7 +792,7 @@ DASTContextSwitchTests >> testInterpreterSwitchTempVectorBindings [
 		context := context sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchTempVectorEvaluateAfterSwitch [
 
 	| interpreter |
@@ -810,7 +812,7 @@ DASTContextSwitchTests >> testInterpreterSwitchTempVectorEvaluateAfterSwitch [
 	self assert: interpreter evaluate equals: 9
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchTempVectorFlatting [
 
 	| astScope temp dastTemp vectorSize |
@@ -847,7 +849,7 @@ DASTContextSwitchTests >> testInterpreterSwitchTempVectorFlatting [
 		context := context sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchTempVectorStack [
 
 	| stack dastElement contextElement |
@@ -878,7 +880,7 @@ DASTContextSwitchTests >> testInterpreterSwitchTempVectorStack [
 		context := context sender ]
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPC [
 
 	| pc node |
@@ -892,7 +894,7 @@ DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPC [
 	self assert: dastContext nodes top identicalTo: node
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 DASTContextSwitchTests >> testInterpreterSwitchTopNodeIsNodeMappedToCurrentPCRecursively [
 
 	| pcs node |

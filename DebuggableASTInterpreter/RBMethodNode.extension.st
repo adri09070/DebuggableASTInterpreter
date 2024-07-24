@@ -1,6 +1,6 @@
-Extension { #name : #RBMethodNode }
+Extension { #name : 'RBMethodNode' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 RBMethodNode >> primitive [ 
 	^ self primitiveFromPragma num
 ]

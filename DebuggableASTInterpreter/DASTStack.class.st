@@ -1,25 +1,27 @@
 Class {
-	#name : #DASTStack,
-	#superclass : #OrderedCollection,
-	#category : #'DebuggableASTInterpreter-Auxiliars'
+	#name : 'DASTStack',
+	#superclass : 'OrderedCollection',
+	#category : 'DebuggableASTInterpreter-Auxiliars',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Auxiliars'
 }
 
-{ #category : #adding }
+{ #category : 'adding' }
 DASTStack >> asArray [ 
 	^ super asArray reversed
 ]
 
-{ #category : #adding }
+{ #category : 'adding' }
 DASTStack >> pop [
 	^ self removeLast 
 ]
 
-{ #category : #adding }
+{ #category : 'adding' }
 DASTStack >> push: anObject [
 	^ self addLast: anObject 
 ]
 
-{ #category : #adding }
+{ #category : 'adding' }
 DASTStack >> top [
 	^ self last 
 ]

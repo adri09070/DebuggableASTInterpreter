@@ -2,8 +2,8 @@
 I can interpret a program represented as an AST
 "
 Class {
-	#name : #DASTInterpreter,
-	#superclass : #Object,
+	#name : 'DASTInterpreter',
+	#superclass : 'Object',
 	#instVars : [
 		'currentContext',
 		'programCounter',
@@ -11,10 +11,12 @@ Class {
 		'astCache',
 		'myComposite'
 	],
-	#category : #'DebuggableASTInterpreter-Core'
+	#category : 'DebuggableASTInterpreter-Core',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Core'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DASTInterpreter class >> startFromContext: aContext [
 
 	| interpreter |
@@ -24,43 +26,43 @@ DASTInterpreter class >> startFromContext: aContext [
 		  (aContext asDASTContextInterpretedBy: interpreter)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> astCache: aCollection [ 
 	astCache := aCollection
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 DASTInterpreter >> cannotReturn: value to: homeContext [
 
 	^ BlockCannotReturn result: value from: homeContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> context [
 	self shouldBeImplemented.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> contextsStack [
 	^ {self currentContext} asOrderedCollection , self currentContext senders
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> currentContext [
 	^ currentContext.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> currentNode [
 	^ currentContext nodes top
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> decreasePC [
 	programCounter := self programCounter - 1
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> evaluate [
 	|node|
 	[ currentContext canExecute ] whileTrue: [  
@@ -72,24 +74,24 @@ DASTInterpreter >> evaluate [
 	^ self stackTop
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> evaluateAST: aRBNode [ 
 	^ self evaluateAST: aRBNode withTemps: #() 
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> evaluateAST: aRBNode withTemps: aCollection [ 
 
 	self initializeWithProgram: aRBNode withTemps: aCollection astCache: astCache.
 	^ self evaluate.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> evaluator [
 	^ evaluator ifNil: [ evaluator := DASTSystemEnvironment new interpreter: self; yourself ]
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTInterpreter >> gtInspectorContextsIn: composite [
 	<gtInspectorPresentationOrder: 1>
 	self currentContext ifNil: [ ^ composite ].
@@ -98,7 +100,7 @@ DASTInterpreter >> gtInspectorContextsIn: composite [
 		display: [ {self currentContext} asOrderedCollection , self currentContext senders ]
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTInterpreter >> gtInspectorCurrentContextIn: composite [
 	<gtInspectorPresentationOrder: 0>
 	myComposite := composite.
@@ -107,19 +109,19 @@ DASTInterpreter >> gtInspectorCurrentContextIn: composite [
 		ifNotNil: [ :ctx | ctx gtInspectorSourceIn: composite]
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTInterpreter >> gtInspectorVariablesIn: composite [
 	<gtInspectorPresentationOrder: 3>
 	self currentContext ifNil: [ ^ composite ].
 	^ self currentContext gtInspectorVarsIn: composite
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> increasePC [
 	programCounter := self programCounter + 1
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreter >> initializeWithContext: aDASTContext [
 	"initialize the interpreter to resume the execution from the context got as argument"
 
@@ -128,18 +130,18 @@ DASTInterpreter >> initializeWithContext: aDASTContext [
 	
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreter >> initializeWithEvaluator: anEPASTEvaluator [ 
 	evaluator := anEPASTEvaluator
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreter >> initializeWithProgram: aRBNode [
 	^self initializeWithProgram: aRBNode withTemps: #() astCache: astCache
 	
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreter >> initializeWithProgram: aRBNode inContext: aDASTContext [ 
 	| visitor nodes rootContext  aCollection |
 	astCache := aDASTContext evaluator astCache. 
@@ -154,7 +156,7 @@ DASTInterpreter >> initializeWithProgram: aRBNode inContext: aDASTContext [
 		yourself
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DASTInterpreter >> initializeWithProgram: aRBNode withTemps: aCollection astCache: anIdentityDictionary [
 
 	| compiledMethod doItMethodNode |
@@ -163,40 +165,40 @@ DASTInterpreter >> initializeWithProgram: aRBNode withTemps: aCollection astCach
 	"aRBNode methodNode generateWithSource."
 
 	compiledMethod := UndefinedObject compiler
-		                  noPattern: true;
+		                  isScripting: true;
 		                  compile: aRBNode methodNode source.
 	doItMethodNode := compiledMethod ast.
 	"(doItMethodNode
 		 doSemanticAnalysis;
-		 ir)" "generate".
+		 ir)" "generate"
 	currentContext := DASTContext
 		                  newNoMethodContextWithProgram: doItMethodNode body
 		                  temps: aCollection
 		                  evaluator: self evaluator
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTInterpreter >> isTerminated [
 	self flag: 'ToDo: is this method necessary?'.
 	^ self currentContext nodes isEmpty and: [self currentContext parent isRoot].
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> programCounter [
 	^ programCounter ifNil:[programCounter := 0]
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> readInstanceVariableNamed: name [
 	^ (self currentContext findInstanceVariable: name) value
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTInterpreter >> receiver [
 	^self currentContext receiver
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> restart: aDASTContext [
 	| newContext temps nargs |
 	newContext := 
@@ -215,7 +217,7 @@ DASTInterpreter >> restart: aDASTContext [
 	currentContext := newContext
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 DASTInterpreter >> solvePrimitive: aMethod receiver: anObject arguments: anArray [
 	| primitiveResult anInteger |
 	anInteger := aMethod primitive.
@@ -241,12 +243,12 @@ DASTInterpreter >> solvePrimitive: aMethod receiver: anObject arguments: anArray
 	
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTInterpreter >> stackPop [
 	^ currentContext stack pop
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTInterpreter >> stackPop: anInteger [
 	| pops |
 	pops := Array new: anInteger.
@@ -255,12 +257,12 @@ DASTInterpreter >> stackPop: anInteger [
 	^ pops
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTInterpreter >> stackPush: anObject [ 
 	currentContext stack push: anObject
 ]
 
-{ #category : #stack }
+{ #category : 'stack' }
 DASTInterpreter >> stackTop [
 	^ currentContext stack
 		ifNotNil: [ :s | s ifEmpty: [ nil ]
@@ -268,7 +270,7 @@ DASTInterpreter >> stackTop [
 		ifNil: [ nil ]
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> stepInto [
 
 	| node initialContext |
@@ -283,7 +285,7 @@ DASTInterpreter >> stepInto [
 	^ self currentContext
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> stepOver [
 	| initialContext |
 	initialContext := currentContext.
@@ -295,7 +297,7 @@ DASTInterpreter >> stepOver [
 	^ self currentContext
 ]
 
-{ #category : #evaluation }
+{ #category : 'evaluation' }
 DASTInterpreter >> stepThrough [
 	| initialContext |
 	initialContext := currentContext.
@@ -307,25 +309,25 @@ DASTInterpreter >> stepThrough [
 	^ self currentContext
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visit: aRBNode [
 
 	aRBNode acceptVisitor: self
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitArgumentNode: aRBArgumentNode [ 
 
 	self stackPush: (currentContext findVariable: aRBArgumentNode name)
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitArgumentVariableNode: aRBVariableNode [
 
 	^ self visitTemporaryNode: aRBVariableNode
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitArrayNode: aRBArrayNode [ 
 	| literals size arrayMirror |
 	size := aRBArrayNode statements size.
@@ -334,7 +336,7 @@ DASTInterpreter >> visitArrayNode: aRBArrayNode [
 	self stackPush: arrayMirror
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitAssignmentNode: aRBAssignmentNode [ 
 	| name value |
 	name := aRBAssignmentNode variable name.
@@ -342,7 +344,7 @@ DASTInterpreter >> visitAssignmentNode: aRBAssignmentNode [
 	self currentContext assignVariable: name value: value
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitBlockNode: aRBBlockNode [ 
 	| block blockMirror |
 	block := DASTBlock new initializeWith: aRBBlockNode; outerContext: currentContext.
@@ -352,36 +354,36 @@ DASTInterpreter >> visitBlockNode: aRBBlockNode [
 	self stackPush: blockMirror 
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitCascadeNode: aRBCascadeNode [ 
 	self flag: 'I do nothing'.
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitClassVariableNode: aRBVariableNode [
 
 	^ self visitGlobalNode: aRBVariableNode
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitGlobalNode: aRBGlobalNode [ 
 
 	self stackPush: (currentContext findVariable: aRBGlobalNode name)
 	
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitGlobalVariableNode: aRBVariableNode [
 
 	^ self visitGlobalNode: aRBVariableNode
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitInstanceVariableNode: aRBInstanceVariableNode [
 	self stackPush: (self readInstanceVariableNamed: aRBInstanceVariableNode name)
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitLiteralArrayNode: aRBLiteralArrayNode [ 
 	
 	| literals size |
@@ -390,24 +392,24 @@ DASTInterpreter >> visitLiteralArrayNode: aRBLiteralArrayNode [
 	self stackPush: (self evaluator newArrayWithAll: literals)
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitLiteralNode: aRBLiteralValueNode [ 
 	self stackPush: (self evaluator literalFrom: aRBLiteralValueNode value)
 
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitLiteralValueNode: aRBLiteralValueNode [ 
 	self visitLiteralNode: aRBLiteralValueNode
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitLiteralVariableNode: aRBVariableNode [
 
 	^ self visitGlobalNode: aRBVariableNode
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitLocalVariableNode: aNode [
 
 	"call visitTemporaryNode: for backward compatibility"
@@ -415,7 +417,7 @@ DASTInterpreter >> visitLocalVariableNode: aNode [
 	^ self visitTemporaryNode: aNode
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitMessageNode: aRBMessageNode [ 
 	| arguments receiver method newContext |
 	" Resolve Arguments "
@@ -453,7 +455,7 @@ DASTInterpreter >> visitMessageNode: aRBMessageNode [
 	
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitMethodNode: aRBBlockNode [ 
 	
 	
@@ -461,7 +463,7 @@ DASTInterpreter >> visitMethodNode: aRBBlockNode [
 	
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitReturnNode: aRBReturneNode [
 
 	| value senderContext methodContext |
@@ -478,13 +480,13 @@ DASTInterpreter >> visitReturnNode: aRBReturneNode [
 	self stackPush: value
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitSelfNode: aRBSelfNode [ 
 	self stackPush: self currentContext receiver
 
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitSequenceNode: aRBSequenceNode [
 
 	| lastResult |
@@ -496,12 +498,12 @@ DASTInterpreter >> visitSequenceNode: aRBSequenceNode [
 	self stackPush: lastResult
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitSuperNode: aRBSuperNode [ 
 	self stackPush: self currentContext receiver.
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitTemporaryNode: aRBTemporaryNode [
 	| name |
 	name := aRBTemporaryNode name.
@@ -510,18 +512,18 @@ DASTInterpreter >> visitTemporaryNode: aRBTemporaryNode [
 		ifFalse: [ self stackPush: (currentContext findVariable: name)]
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitTemporaryVariableNode: aRBVariableNode [
 
 	^ self visitTemporaryNode: aRBVariableNode
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitThisContextNode: aRBThisContextNode [ 
 	self stackPush: currentContext
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> visitVariableNode: aRBVariableNode [ 
 
 	aRBVariableNode isDefinition
@@ -530,7 +532,7 @@ DASTInterpreter >> visitVariableNode: aRBVariableNode [
 	self stackPush: (currentContext findVariable: aRBVariableNode name)
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 DASTInterpreter >> write: value toInstVarNamed: name [
 	self currentContext write: value toInstVarNamed: name
 ]

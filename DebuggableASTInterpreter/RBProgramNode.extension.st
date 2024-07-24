@@ -1,6 +1,6 @@
-Extension { #name : #RBProgramNode }
+Extension { #name : 'RBProgramNode' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 RBProgramNode >> asBlockEvaluated [
 	| sequenceNode blockNode messageNode |
 
@@ -11,7 +11,7 @@ RBProgramNode >> asBlockEvaluated [
 	^ messageNode
 ]
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 RBProgramNode >> isDASTClosure [ 
 	^false
 ]

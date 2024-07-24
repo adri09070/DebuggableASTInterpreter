@@ -1,6 +1,6 @@
-Extension { #name : #Context }
+Extension { #name : 'Context' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 
 	| dastCtx bindings aimedNode currentNode dastSender closureToDASTBlock tempNames |
@@ -97,7 +97,7 @@ Context >> asDASTContextInterpretedBy: aDASTInterpreter [
 	^ dastCtx
 ]
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 Context >> nodeForCurrentPC [
 	
 	 ^ self method ast sourceNodeForPC: pc

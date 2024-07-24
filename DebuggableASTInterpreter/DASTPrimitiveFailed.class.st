@@ -1,14 +1,16 @@
 Class {
-	#name : #DASTPrimitiveFailed,
-	#superclass : #Error,
+	#name : 'DASTPrimitiveFailed',
+	#superclass : 'Error',
 	#instVars : [
 		'primitiveNumber',
 		'receiver'
 	],
-	#category : #'DebuggableASTInterpreter-Exceptions'
+	#category : 'DebuggableASTInterpreter-Exceptions',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Exceptions'
 }
 
-{ #category : #instantiation }
+{ #category : 'instantiation' }
 DASTPrimitiveFailed class >> primitiveNumber: anInteger receiver: anObject [ 
 	^ self new
 		primitiveNumber: anInteger; 
@@ -16,17 +18,17 @@ DASTPrimitiveFailed class >> primitiveNumber: anInteger receiver: anObject [
 		yourself
 ]
 
-{ #category : #signaling }
+{ #category : 'signaling' }
 DASTPrimitiveFailed class >> signalWithPrimitive: anInteger receiver: anObject [
 	^(self primitiveNumber: anInteger receiver: anObject) signal
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTPrimitiveFailed >> primitiveNumber: anInteger [ 
 	primitiveNumber := anInteger
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTPrimitiveFailed >> receiver: anObject [ 
 	receiver := anObject
 ]

@@ -3,85 +3,87 @@ I'm the first context, the one who accesses global variables.
 I must be refactored when contexts start to use DASTEnvironments
 "
 Class {
-	#name : #DASTContextRootSmalltalk,
-	#superclass : #DASTContext,
-	#category : #'DebuggableASTInterpreter-Contexts'
+	#name : 'DASTContextRootSmalltalk',
+	#superclass : 'DASTContext',
+	#category : 'DebuggableASTInterpreter-Contexts',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Contexts'
 }
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContextRootSmalltalk >> allInstVars [ 
 	^#()
 ]
 
-{ #category : #'accessing - private' }
+{ #category : 'accessing - private' }
 DASTContextRootSmalltalk >> allTemps [
 	^ #()
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContextRootSmalltalk >> arguments [
 
 	^ {  } asOrderedCollection
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 DASTContextRootSmalltalk >> asContext [
 
 	^ [ Processor terminateRealActive] asContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContextRootSmalltalk >> assignVariable: name value: value [
 	(self findVariable: name)
 	   ifNotNil: [ self evaluator environment setGlobal: name value: value. ^ true ].
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DASTContextRootSmalltalk >> belongsToDoIt [
 
 	^ false
 ]
 
-{ #category : #'API-lookup' }
+{ #category : 'API-lookup' }
 DASTContextRootSmalltalk >> findLocalVariable: aName [
 	^ nil
 		
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContextRootSmalltalk >> findVariable: aName [
 	^ self findGlobalVariable: aName
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTContextRootSmalltalk >> gtInspectorSourceIn: composite [
 	<gtInspectorPresentationOrder: 30> 
 	''
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContextRootSmalltalk >> isBlockContext [
 	^false
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContextRootSmalltalk >> isRoot [ 
 	^true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContextRootSmalltalk >> isUnwindContext [
 	"is this context for  method that is marked?"
 	^ self shouldNotImplement 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DASTContextRootSmalltalk >> methodClass [
 	^ nil
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 DASTContextRootSmalltalk >> privCopyStackInContext: newContext [
 
 	"nothing to copy when self isRoot"
@@ -89,12 +91,12 @@ DASTContextRootSmalltalk >> privCopyStackInContext: newContext [
 	
 ]
 
-{ #category : #'gt-extension' }
+{ #category : 'gt-extension' }
 DASTContextRootSmalltalk >> sourceCode [
 	^ ''
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DASTContextRootSmalltalk >> temps: aCollection [ 
 	self shouldBeImplemented.
 ]

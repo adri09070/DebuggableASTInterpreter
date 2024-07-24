@@ -1,5 +1,7 @@
 Class {
-	#name : #DASTEnvironment,
-	#superclass : #Object,
-	#category : #'DebuggableASTInterpreter-Environments'
+	#name : 'DASTEnvironment',
+	#superclass : 'Object',
+	#category : 'DebuggableASTInterpreter-Environments',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Environments'
 }

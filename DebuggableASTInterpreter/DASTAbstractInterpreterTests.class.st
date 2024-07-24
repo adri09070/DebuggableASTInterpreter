@@ -1,24 +1,26 @@
 Class {
-	#name : #DASTAbstractInterpreterTests,
-	#superclass : #TestCase,
+	#name : 'DASTAbstractInterpreterTests',
+	#superclass : 'TestCase',
 	#instVars : [
 		'interpreter'
 	],
-	#category : #'DebuggableASTInterpreter-Tests'
+	#category : 'DebuggableASTInterpreter-Tests',
+	#package : 'DebuggableASTInterpreter',
+	#tag : 'Tests'
 }
 
-{ #category : #running }
+{ #category : 'running' }
 DASTAbstractInterpreterTests >> evaluateProgram: aString [
 	self initializeProgram: aString.
 	^ interpreter evaluate
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DASTAbstractInterpreterTests >> initializeProgram: aString [
 	interpreter initializeWithProgram: (RBParser parseExpression: aString).
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DASTAbstractInterpreterTests >> setUp [
 	interpreter := DASTInterpreter new.
 ]

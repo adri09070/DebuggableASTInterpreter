@@ -1,6 +1,6 @@
-Extension { #name : #RBBlockNode }
+Extension { #name : 'RBBlockNode' }
 
-{ #category : #'*DebuggableASTInterpreter' }
+{ #category : '*DebuggableASTInterpreter' }
 RBBlockNode >> sourceCode [
 	^ [ super sourceCode ] on: Exception do: [ '' ]
 ]

@@ -1,22 +1,23 @@
 Class {
-	#name : #StSwitchToDASTCommand,
-	#superclass : #StDebuggerCommand,
-	#category : #DebuggableASTDebuggerExperiment
+	#name : 'StSwitchToDASTCommand',
+	#superclass : 'StDebuggerCommand',
+	#category : 'DebuggableASTDebuggerExperiment',
+	#package : 'DebuggableASTDebuggerExperiment'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 StSwitchToDASTCommand class >> defaultIconName [
 
 	^ #halt
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 StSwitchToDASTCommand class >> defaultShortcut [
 
 	^ $d meta , $s meta
 ]
 
-{ #category : #executing }
+{ #category : 'executing' }
 StSwitchToDASTCommand >> execute [
 
 	| session |
