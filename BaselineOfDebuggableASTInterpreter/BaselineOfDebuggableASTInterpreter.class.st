@@ -1,10 +1,11 @@
 Class {
-	#name : #BaselineOfDebuggableASTInterpreter,
-	#superclass : #BaselineOf,
-	#category : #BaselineOfDebuggableASTInterpreter
+	#name : 'BaselineOfDebuggableASTInterpreter',
+	#superclass : 'BaselineOf',
+	#category : 'BaselineOfDebuggableASTInterpreter',
+	#package : 'BaselineOfDebuggableASTInterpreter'
 }
 
-{ #category : #baselines }
+{ #category : 'baselines' }
 BaselineOfDebuggableASTInterpreter >> baseline: spec [
 
 	<baseline>
@@ -15,10 +16,12 @@ BaselineOfDebuggableASTInterpreter >> baseline: spec [
 			package: 'DebuggableASTInterpreter';
 			package: 'DebuggableASTDebugger' with: [ 
 				spec requires: #( 'DebuggableASTInterpreter' ) ] ].
+		spec package: 'DebuggableASTDebuggerExperiment' with: [ spec requires: #( 'DebuggableASTDebugger' ) ].
 
 	"Groups"
 	spec
 		group: 'default' with: #( 'Model' );
 		group: 'Model' with: #( 'DebuggableASTInterpreter' );
-		group: 'Debugger' with: #( 'DebuggableASTDebugger' )
+		group: 'Debugger' with: #( 'DebuggableASTDebugger' );
+		group: 'DebuggerXP' with: #( 'DebuggableASTDebuggerExperiment' )
 ]
