@@ -176,10 +176,10 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindings [
 	context := dastContext asContext.
 
 	self
-		assert: ((context lookupTempVar: #a) readInContext: context)
+		assert: ((context lookupVar: #a) readInContext: context)
 		equals: 40.
 	self
-		assert: ((context lookupTempVar: #b) readInContext: context)
+		assert: ((context lookupVar: #b) readInContext: context)
 		equals: 2
 ]
 
@@ -201,11 +201,11 @@ DASTContextSwitchTests >> testBytecodeSwitchKeepsBindingsRecursively [
 			dastTemp isBlock
 				ifFalse: [
 					self
-						assert: ((context lookupTempVar: temp) readInContext: context)
+						assert: ((context lookupVar: temp) readInContext: context)
 						identicalTo: dastTemp ]
 				ifTrue: [
 					| contextTemp |
-					contextTemp := (context lookupTempVar: temp) readInContext:
+					contextTemp := (context lookupVar: temp) readInContext:
 						               context.
 					self assertFullBlock: contextTemp equalsDASTBlock: dastTemp ] ].
 		context := context sender.
@@ -389,11 +389,11 @@ DASTContextSwitchTests >> testBytecodeSwitchTempVectorBindings [
 			dastTemp isBlock
 				ifFalse: [
 					self
-						assert: ((context lookupTempVar: temp) readInContext: context)
+						assert: ((context lookupVar: temp) readInContext: context)
 						identicalTo: dastTemp ]
 				ifTrue: [
 					| contextTemp |
-					contextTemp := (context lookupTempVar: temp) readInContext:
+					contextTemp := (context lookupVar: temp) readInContext:
 						               context.
 					self assertFullBlock: contextTemp equalsDASTBlock: dastTemp ] ].
 
@@ -580,10 +580,10 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsBindings [
 
 	4 timesRepeat: [ context := context step ].
 	self
-		assert: ((context lookupTempVar: #a) readInContext: context)
+		assert: ((context lookupVar: #a) readInContext: context)
 		equals: 40.
 	self
-		assert: ((context lookupTempVar: #b) readInContext: context)
+		assert: ((context lookupVar: #b) readInContext: context)
 		equals: 2.
 
 	dastContext := context asDASTContextInterpretedBy:
@@ -604,7 +604,7 @@ DASTContextSwitchTests >> testInterpreterSwitchKeepsBindingsRecursively [
 		tempNames := context tempNames.
 		tempNames do: [ :temp |
 			self
-				assert: ((context lookupTempVar: temp) readInContext: context)
+				assert: ((context lookupVar: temp) readInContext: context)
 				identicalTo: (dastContext findLocalVariable: temp) value ].
 		context := context sender.
 		dastContext := dastContext sender ]
@@ -780,11 +780,11 @@ DASTContextSwitchTests >> testInterpreterSwitchTempVectorBindings [
 			dastTemp isBlock
 				ifFalse: [
 					self
-						assert: ((context lookupTempVar: temp) readInContext: context)
+						assert: ((context lookupVar: temp) readInContext: context)
 						identicalTo: dastTemp ]
 				ifTrue: [
 					| contextTemp |
-					contextTemp := (context lookupTempVar: temp) readInContext:
+					contextTemp := (context lookupVar: temp) readInContext:
 						               context.
 					self assertFullBlock: contextTemp equalsDASTBlock: dastTemp ] ].
 
